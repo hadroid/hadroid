@@ -1,87 +1,87 @@
 [
   [
     {
-      "type": "Le Grill",
-      "name": "Paillard de Dinde",
-      "price": "A partir de 8.50"
+      "name": "Paillard de Dinde Onglet de Boeuf Saucisse de veau",
+      "price": "A partir de 8.50",
+      "type": "Le Grill"
     },
     {
-      "type": "pizza",
-      "name": "Pizza du jour 11.50 Pizza margherita 8.50",
-      "price": ""
+      "name": "Pizza du jour / Pizza margherita",
+      "price": "11.50 / 8.50",
+      "type": "pizza"
     },
     {
-      "type": "Sp\u00e9cialit\u00e9",
       "name": "Burger de boeuf du moment",
-      "price": "15.-"
+      "price": "15",
+      "type": "Sp\u00e9cialit\u00e9"
     }
   ],
   [
     {
-      "type": "Le Grill",
-      "name": "Paillard de Dinde",
-      "price": "A partir de 8.50"
+      "name": "Paillard de Dinde Onglet de Boeuf Saucisse de veau",
+      "price": "A partir de 8.50",
+      "type": "Le Grill"
     },
     {
-      "type": "pizza",
-      "name": "Pizza du jour 11.50 Pizza margherita 8.50",
-      "price": ""
+      "name": "Pizza du jour / Pizza margherita",
+      "price": "11.50 / 8.50",
+      "type": "pizza"
     },
     {
-      "type": "Sp\u00e9cialit\u00e9",
       "name": "Fish and chips",
-      "price": "15.-"
+      "price": "15",
+      "type": "Sp\u00e9cialit\u00e9"
     }
   ],
   [
     {
-      "type": "Le Grill",
-      "name": "Paillard de Dinde",
-      "price": "A partir de 8.50"
+      "name": "Paillard de Dinde Onglet de Boeuf Saucisse de veau",
+      "price": "A partir de 8.50",
+      "type": "Le Grill"
     },
     {
-      "type": "pizza",
-      "name": "Pizza du jour 11.50 Pizza margherita 8.50",
-      "price": ""
+      "name": "Pizza du jour / Pizza margherita",
+      "price": "11.50 / 8.50",
+      "type": "pizza"
     },
     {
-      "type": "Sp\u00e9cialit\u00e9",
       "name": "Civet de chevreuil aux airelles",
-      "price": "15.-"
+      "price": "15",
+      "type": "Sp\u00e9cialit\u00e9"
     }
   ],
   [
     {
-      "type": "Le Grill",
-      "name": "Paillard de Dinde",
-      "price": "A partir de 8.50"
+      "name": "Paillard de Dinde Onglet de Boeuf Saucisse de veau",
+      "price": "A partir de 8.50",
+      "type": "Le Grill"
     },
     {
-      "type": "pizza",
-      "name": "Pizza du jour 11.50 Pizza margherita 8.50",
-      "price": ""
+      "name": "Pizza du jour / Pizza margherita",
+      "price": "11.50 / 8.50",
+      "type": "pizza"
     },
     {
-      "type": "Sp\u00e9cialit\u00e9",
       "name": "Choucroute",
-      "price": "15.-"
+      "price": "15",
+      "type": "Sp\u00e9cialit\u00e9"
     }
   ],
   [
     {
-      "type": "Le Grill",
-      "name": "Paillard de Dinde",
-      "price": "A partir de 8.50"
+      "name": "Paillard de Dinde Onglet de Boeuf Saucisse de veau",
+      "price": "A partir de 8.50",
+      "type": "Le Grill"
     },
     {
-      "type": "pizza",
-      "name": "Pizza du jour 11.50 Pizza margherita 8.50",
-      "price": ""
+      "name": "Pizza du jour / Pizza margherita",
+      "price": "11.50 / 8.50",
+      "type": "pizza"
     },
     {
-      "type": "Sp\u00e9cialit\u00e9",
       "name": "Porc \u00e0 l'aigre doux",
-      "price": "15.-"
+      "price": "15",
+      "type": "Sp\u00e9cialit\u00e9"
     }
   ]
 ]

@@ -2,10 +2,12 @@ import requests
 import datetime
 import sys
 import re
+from pyquery import PyQuery
 
 
 def fetch_menu(menu_name):
     from config import REQUESTS
+
     url = REQUESTS[menu_name]['url']
     headers = REQUESTS[menu_name]['headers']
     text = requests.get(url, headers=headers).text
@@ -18,15 +20,50 @@ def mock_menu():
     return text
 
 
+def type_parser(type_):
+    type_ = type_.strip()
+    if type_ == 'Menu 1':
+        return 'Menu1'
+    return type_
+
+
+def price_parser(price):
+    if price is None:
+        return ''
+    price = price.strip()
+    if price.endswith('.-'):
+        return price[:-2]
+    return price
+
+
+def name_parser(name):
+    return re.sub('\s\s+', ' ', name.strip())
+
+
+def format_menu_item(type_, dish, price):
+    if name_parser(dish) == 'Pizza du jour 11.50 Pizza margherita 8.50':
+        dish = 'Pizza du jour / Pizza margherita'
+        price = '11.50 / 8.50'
+    elif name_parser(dish) == \
+            'Paillard de Dinde Onglet de Boeuf Saucisse de veau':
+        dish = 'Paillard de Dinde, Onglet de Boeuf, Saucisse de veau'
+    return {
+        'type': type_parser(type_),
+        'name': name_parser(dish),
+        'price': price_parser(price),
+    }
+
+
 def parse_menu(menu_html):
-    from pyquery import PyQuery
-    pq = PyQuery(menu_html)
     # yup... they close <span> with </font>
     menu_html = menu_html.replace("</font>", "</span>")
+    menu_html = menu_html.replace("<br />", "")
+    menu_html = menu_html.replace("\n", "")
+    pq = PyQuery(menu_html)
     topmenus = [e.text for e in pq('table.menuRestaurant tr td.typeMenu')]
     days = [e.text for e in pq('table.menuRestaurant tr td.EnteteMenu')]
-    dish_names = [e.text for e in pq(
-        'table.HauteurMenu tr td table.HauteurMenu tr td span')]
+    query = 'table.HauteurMenu tr td table.HauteurMenu tr td span'
+    dish_names = [e.text for e in pq(query)]
     prices = [e.text for e in pq(
         'table.HauteurMenu tr td table.HauteurMenu tr td center table tr td')]
     dishes_prices = zip(*([iter(zip(dish_names, prices))] * 3))
@@ -36,14 +73,10 @@ def parse_menu(menu_html):
         day, dish_prices = item
         dd = []  # daily dishes
         for entry in zip(dish_prices, topmenus):
-            dish_price, typ = entry
+            dish_price, type_ = entry
             dish, price = dish_price
             price = '' if price is None else price
-            dd.append({
-                'type': typ.strip(),
-                'name': re.sub('\s\s+', ' ', dish.strip()),
-                'price': price.strip(),
-            })
+            dd.append(format_menu_item(type_, dish, price))
         d.append(dd)
     return d
 
@@ -63,12 +96,10 @@ def name_formatter(name):
 
 
 def price_formatter(price):
-    if price is None:
-        return ''
-    if price.strip().endswith('.-'):
-        return price[:-2] + ' CHF'
+    if price:
+        return '({} CHF)'.format(price)
     else:
-        return price + ' CHF'
+        return price
 
 
 def type_formatter(type_):
@@ -86,10 +117,10 @@ def type_formatter(type_):
 
 def menu_for_the_day(day_of_week=None):
     weekly_menu = fetch_full_weekly_menu()
-    day_of_week = day_of_week or datetime.datetime.now().weekday()
+    if day_of_week is None:
+        day_of_week = datetime.datetime.now().weekday()
     if day_of_week > 4:
-        day_of_week = 4
-        print('Showing menu for last Friday')
+        raise Exception("Menu of the day not available for weekend.")
     today = weekly_menu[day_of_week]
     msg = ":fork_and_knife: Hey Y'@/all, it's lunch time! :clock12:\n"
     msg += "Today's R2 selection:\n"

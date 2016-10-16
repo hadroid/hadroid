@@ -2,6 +2,7 @@ import requests
 import json
 from r2menu import menu_for_the_day
 from config import ACCESS_TOKEN, TEST_ROOM_ID
+import sys
 
 
 class GitterClient(object):
@@ -24,10 +25,12 @@ class GitterClient(object):
 
 
 def msg_main():
+    day = int(sys.argv[1])
+    msg = menu_for_the_day(day)  # day_of_week=None)
+
     token = ACCESS_TOKEN
     room_id = TEST_ROOM_ID
     c = GitterClient(token, room_id)
-    msg = menu_for_the_day()
     c.send_msg(msg)
 
 if __name__ == '__main__':
