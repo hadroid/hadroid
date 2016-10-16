@@ -1,0 +1,87 @@
+[
+  [
+    {
+      "type": "Le Grill",
+      "name": "Paillard de Dinde",
+      "price": "A partir de 8.50"
+    },
+    {
+      "type": "pizza",
+      "name": "Pizza du jour 11.50 Pizza margherita 8.50",
+      "price": ""
+    },
+    {
+      "type": "Sp\u00e9cialit\u00e9",
+      "name": "Burger de boeuf du moment",
+      "price": "15.-"
+    }
+  ],
+  [
+    {
+      "type": "Le Grill",
+      "name": "Paillard de Dinde",
+      "price": "A partir de 8.50"
+    },
+    {
+      "type": "pizza",
+      "name": "Pizza du jour 11.50 Pizza margherita 8.50",
+      "price": ""
+    },
+    {
+      "type": "Sp\u00e9cialit\u00e9",
+      "name": "Fish and chips",
+      "price": "15.-"
+    }
+  ],
+  [
+    {
+      "type": "Le Grill",
+      "name": "Paillard de Dinde",
+      "price": "A partir de 8.50"
+    },
+    {
+      "type": "pizza",
+      "name": "Pizza du jour 11.50 Pizza margherita 8.50",
+      "price": ""
+    },
+    {
+      "type": "Sp\u00e9cialit\u00e9",
+      "name": "Civet de chevreuil aux airelles",
+      "price": "15.-"
+    }
+  ],
+  [
+    {
+      "type": "Le Grill",
+      "name": "Paillard de Dinde",
+      "price": "A partir de 8.50"
+    },
+    {
+      "type": "pizza",
+      "name": "Pizza du jour 11.50 Pizza margherita 8.50",
+      "price": ""
+    },
+    {
+      "type": "Sp\u00e9cialit\u00e9",
+      "name": "Choucroute",
+      "price": "15.-"
+    }
+  ],
+  [
+    {
+      "type": "Le Grill",
+      "name": "Paillard de Dinde",
+      "price": "A partir de 8.50"
+    },
+    {
+      "type": "pizza",
+      "name": "Pizza du jour 11.50 Pizza margherita 8.50",
+      "price": ""
+    },
+    {
+      "type": "Sp\u00e9cialit\u00e9",
+      "name": "Porc \u00e0 l'aigre doux",
+      "price": "15.-"
+    }
+  ]
+]

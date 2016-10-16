@@ -1,0 +1,87 @@
+[
+  [
+    {
+      "type": "Menu 1",
+      "price": "8.40",
+      "name": "Boudin \u00e0 la cr\u00e8me"
+    },
+    {
+      "type": "Menu2",
+      "price": "10.10",
+      "name": "Escalope de dinde pan\u00e9e"
+    },
+    {
+      "type": "V\u00e9g\u00e9tarien",
+      "price": "8.60",
+      "name": "Tajine de l\u00e9gumes au quinoa"
+    }
+  ],
+  [
+    {
+      "type": "Menu 1",
+      "price": "8.40",
+      "name": "Daube de porc aux noisettes"
+    },
+    {
+      "type": "Menu2",
+      "price": "10.10",
+      "name": "Poulet r\u00f4ti pattes noires"
+    },
+    {
+      "type": "V\u00e9g\u00e9tarien",
+      "price": "8.60",
+      "name": "Crumble de potirons"
+    }
+  ],
+  [
+    {
+      "type": "Menu 1",
+      "price": "8.40",
+      "name": "Tarte \u00e0 l'oignons du canton de Berne"
+    },
+    {
+      "type": "Menu2",
+      "price": "10.10",
+      "name": "R\u00f4ti de lapin \u00e0 la moutarde"
+    },
+    {
+      "type": "V\u00e9g\u00e9tarien",
+      "price": "8.60",
+      "name": "Shop suey de l\u00e9gumes"
+    }
+  ],
+  [
+    {
+      "type": "Menu 1",
+      "price": "8.40",
+      "name": "Ro\u00ebsti pizza \u00e0 la dinde fum\u00e9e"
+    },
+    {
+      "type": "Menu2",
+      "price": "10.10",
+      "name": "Boulette de boeuf charolaise \u00e0 la coriandre"
+    },
+    {
+      "type": "V\u00e9g\u00e9tarien",
+      "price": "8.60",
+      "name": "Cannellonni v\u00e9getarien"
+    }
+  ],
+  [
+    {
+      "type": "Menu 1",
+      "price": "8.40",
+      "name": "Cassolette de pommes de terre, gesiers de volaille aux oignons"
+    },
+    {
+      "type": "Menu2",
+      "price": "10.10",
+      "name": "Poisson de la p\u00eache du jour"
+    },
+    {
+      "type": "V\u00e9g\u00e9tarien",
+      "price": "8.60",
+      "name": "Wok de l\u00e9gumes et \u00e9minc\u00e9 de quorn"
+    }
+  ]
+]
