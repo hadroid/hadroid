@@ -23,10 +23,10 @@ class GitterClient(object):
         assert r.status_code == 200
 
 
-def main():
-    room = sys.argv[1]
-    day = sys.argv[2]
-    out = sys.argv[3]
+def menu():
+    room = sys.argv[2]
+    day = sys.argv[3]
+    out = sys.argv[4]
     assert room in ROOM_IDS.keys()
     assert day in ['today', 'tomorrow']
     assert out in ['gitter', 'console']
@@ -41,5 +41,19 @@ def main():
     elif out == 'console':
         print(msg)
 
+
+def say():
+    room = sys.argv[2]
+    assert room in ROOM_IDS.keys()
+    msg = sys.argv[3]
+    token = ACCESS_TOKEN
+    room_id = ROOM_IDS[room]
+    c = GitterClient(token, room_id)
+    c.send_msg(msg)
+
 if __name__ == '__main__':
-    main()
+    opt = sys.argv[1]
+    if opt == 'menu':
+        menu()
+    elif opt == 'say':
+        say()
