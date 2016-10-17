@@ -25,8 +25,8 @@ class GitterClient(object):
 
 
 def msg_main():
-    day = int(sys.argv[1])
-    msg = menu_for_the_day(day)  # day_of_week=None)
+    # day = int(sys.argv[1])
+    msg = menu_for_the_day()  # day_of_week=None)
 
     token = ACCESS_TOKEN
     room_id = TEST_ROOM_ID
