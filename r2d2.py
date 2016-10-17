@@ -1,7 +1,7 @@
 import requests
 import json
-from r2menu import menu_for_the_day
-from config import ACCESS_TOKEN, TEST_ROOM_ID
+from menu import fetch_menu, format_pretty_menu_msg
+from config import ACCESS_TOKEN, ROOM_IDS
 import sys
 
 
@@ -11,7 +11,6 @@ class GitterClient(object):
         self.room_id = room_id
 
     def send_msg(self, text):
-
         url = 'https://api.gitter.im/v1/rooms/{room_id}/chatMessages'.format(
             room_id=self.room_id)
         headers = {
@@ -24,14 +23,23 @@ class GitterClient(object):
         assert r.status_code == 200
 
 
-def msg_main():
-    # day = int(sys.argv[1])
-    msg = menu_for_the_day()  # day_of_week=None)
+def main():
+    room = sys.argv[1]
+    day = sys.argv[2]
+    out = sys.argv[3]
+    assert room in ROOM_IDS.keys()
+    assert day in ['today', 'tomorrow']
+    assert out in ['gitter', 'console']
 
-    token = ACCESS_TOKEN
-    room_id = TEST_ROOM_ID
-    c = GitterClient(token, room_id)
-    c.send_msg(msg)
+    menu = fetch_menu(day)
+    msg = format_pretty_menu_msg(menu)
+    if out == 'gitter':
+        token = ACCESS_TOKEN
+        room_id = ROOM_IDS[room]
+        c = GitterClient(token, room_id)
+        c.send_msg(msg)
+    elif out == 'console':
+        print(msg)
 
 if __name__ == '__main__':
-    msg_main()
+    main()
