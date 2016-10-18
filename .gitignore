@@ -1,7 +1,6 @@
-# Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
 .cache/
 
-# Application config
-config.py
+# Gitter access token
+ACCESS_TOKEN

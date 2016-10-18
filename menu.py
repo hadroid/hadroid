@@ -3,6 +3,7 @@ import re
 
 
 def item_cleaner(item):
+    """Format some pre-defined items in a nicer way."""
     item['name'] = re.sub('\s\s+', ' ', item['name'].strip())
     if item['name'] == 'Pizza du jour 11.50 Pizza margherita 8.50':
         item['name'] = 'Pizza du jour / Pizza margherita'
