@@ -92,29 +92,29 @@ class GitterStream(GitterClient):
                 except Exception as e:
                     print(e)
 
-    def respond(self, cmd):
+    def respond(self, cmd, msg_json):
         """Respond to a bot command."""
         try:
             # Create a 'fake' CLI execution of the actual bot program
             argv = cmd.split()
             args = docopt.docopt(bot_doc, argv=argv, version=__version__)
-            bot_main(self, args)
+            bot_main(self, args, msg_json)
 
         except docopt.DocoptExit as e:
             self.send_msg("```text\n{0}```".format(str(e)))
 
-    def parse_message(self, msg):
+    def parse_message(self, msg_json):
         """Parse a chat message for bot-mentions."""
-        text = msg['text']
+        text = msg_json['text']
         # ignore messages from the bot himself
-        if msg['fromUser']['username'] == BOT_NAME:
+        if msg_json['fromUser']['username'] == BOT_NAME:
             return
         try:  # respond only to some bot-prefixed messages
             prefix = next(p for p in CMD_PREFIX if text.startswith(p))
             text = text.lstrip(prefix).strip()
         except StopIteration:
             return
-        self.respond(text)
+        self.respond(text, msg_json)
 
 
 if __name__ == '__main__':

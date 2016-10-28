@@ -10,3 +10,5 @@ with open('ACCESS_TOKEN', 'r') as fp:
 
 # !<command> or @CERN-R2-D2 <command>
 CMD_PREFIX = ('!', '@' + BOT_NAME)
+
+ADMINS = ('krzysztof', )

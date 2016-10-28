@@ -6,6 +6,7 @@ Parameter <day> can be either "today" or "tomorrow".
 Usage:
     @CERN-R2-D2 menu <day>
     @CERN-R2-D2 echo <msg>...
+    @CERN-R2-D2 selfdestruct
 
 Examples:
     @CERN-R2-D2 menu tomorrow
@@ -19,6 +20,9 @@ Options:
 from __init__ import __version__
 from docopt import docopt
 from menu import fetch_menu, format_pretty_menu_msg
+from config import ADMINS
+import sys
+from time import sleep
 
 
 class Client(object):
@@ -37,7 +41,7 @@ class StdoutClient(Client):
         print(text)
 
 
-def bot_main(client, args):
+def bot_main(client, args, msg_json=None):
     """Main bot function."""
     if args['menu']:
         day = args['<day>']
@@ -50,6 +54,21 @@ def bot_main(client, args):
     elif args['echo']:
         msg = " ".join(args['<msg>'])
         client.send_msg(msg)
+    elif args['selfdestruct']:
+        if msg_json['fromUser']['username'] in ADMINS:
+            client.send_msg("Self destructing in 3..")
+            sleep(1)
+            client.send_msg("..2")
+            sleep(1)
+            client.send_msg("..1")
+            sleep(1)
+            client.send_msg(":boom:")
+            sys.exit(0)
+        else:
+            name = msg_json['fromUser']['displayName']
+            name = name.split()[0] if name.split()[0] else name
+            client.send_msg(
+                "I'm sorry {0}, I'm afraid I can't do that.".format(name))
 
 if __name__ == "__main__":
     args = docopt(__doc__, version=__version__)
