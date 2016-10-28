@@ -9,12 +9,12 @@ channel. The 'exec' command will execute a single bot command and broadcast
 it on the Gitter channel (for actual commands see 'bot.py').
 
 Usage:
-    botctl stream (qa|prod)
-    botctl exec (qa|prod) <cmd>
+    botctl stream (test|qa|prod)
+    botctl exec (test|qa|prod) <cmd>
 
 Examples:
     botctl stream qa
-    botctl exec qa "menu today"
+    botctl exec test "menu today"
     botctl exec qa "echo Hello everyone!"
 
 Options:
@@ -25,8 +25,8 @@ Options:
 
 import requests
 import json
-from config import ACCESS_TOKEN, TEST_ROOM_ID, MAIN_ROOM_ID, CMD_PREFIX, \
-    BOT_NAME
+from config import ACCESS_TOKEN, QA_ROOM_ID, TEST_ROOM_ID, MAIN_ROOM_ID, \
+    CMD_PREFIX, BOT_NAME
 import docopt
 from bot import __doc__ as bot_doc, bot_main, Client
 from __init__ import __version__
@@ -116,6 +116,8 @@ class GitterStream(GitterClient):
 if __name__ == '__main__':
     args = docopt.docopt(__doc__, version=__version__)
     if args['qa']:
+        room_id = QA_ROOM_ID
+    elif args['test']:
         room_id = TEST_ROOM_ID
     elif args['prod']:
         room_id = MAIN_ROOM_ID
