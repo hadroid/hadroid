@@ -5,7 +5,11 @@ Parameter <day> can be either "today" or "tomorrow".
 
 Usage:
     @CERN-R2-D2 menu <day>
-    @CERN-R2-D2 echo <msg>
+    @CERN-R2-D2 echo <msg>...
+
+Examples:
+    @CERN-R2-D2 menu tomorrow
+    @CERN-R2-D2 echo Hello @/all!
 
 Options:
     -h --help   Show this help.
@@ -37,12 +41,14 @@ def bot_main(client, args):
     """Main bot function."""
     if args['menu']:
         day = args['<day>']
-        assert day in ['today', 'tomorrow']
-        menu = fetch_menu(day)
-        msg = format_pretty_menu_msg(menu)
+        if day not in ['today', 'tomorrow']:
+            msg = "Please specify a correct day (today or tomorrow)."
+        else:
+            menu = fetch_menu(day)
+            msg = format_pretty_menu_msg(menu)
         client.send_msg(msg)
     elif args['echo']:
-        msg = args['<msg>']
+        msg = " ".join(args['<msg>'])
         client.send_msg(msg)
 
 if __name__ == "__main__":

@@ -87,13 +87,17 @@ class GitterStream(GitterClient):
         r = requests.get(url, headers=headers, stream=True)
         for line in r.iter_lines():
             if line and len(line) > 1:
-                self.parse_message(json.loads(line.decode('utf8')))
+                try:
+                    self.parse_message(json.loads(line.decode('utf8')))
+                except Exception as e:
+                    print(e)
 
     def respond(self, cmd):
         """Respond to a bot command."""
         try:
             # Create a 'fake' CLI execution of the actual bot program
-            args = docopt.docopt(bot_doc, argv=cmd, version=__version__)
+            argv = cmd.split()
+            args = docopt.docopt(bot_doc, argv=argv, version=__version__)
             bot_main(self, args)
 
         except docopt.DocoptExit as e:
@@ -127,6 +131,7 @@ if __name__ == '__main__':
         client.listen()
     elif args['exec']:
         client = GitterClient(ACCESS_TOKEN, room_id)
-        bot_args = docopt.docopt(bot_doc, argv=args['<cmd>'],
+        bot_argv = args['<cmd>'].split()  # split except quotes
+        bot_args = docopt.docopt(bot_doc, argv=bot_argv,
                                  version=__version__)
         bot_main(client, bot_args)
