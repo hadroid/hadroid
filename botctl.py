@@ -58,7 +58,7 @@ class GitterClient(Client):
         self.token = token
         self.room_id = room_id
 
-    def send_msg(self, text):
+    def send(self, msg):
         """Send message to Gitter channel."""
         url = 'https://api.gitter.im/v1/rooms/{room_id}/chatMessages'.format(
             room_id=self.room_id)
@@ -67,7 +67,7 @@ class GitterClient(Client):
             'accept': 'application/json',
             'authorization': 'Bearer {token}'.format(token=self.token),
         }
-        data = json.dumps({'text': text})
+        data = json.dumps({'text': msg})
         r = requests.post(url, data=data, headers=headers)
         assert r.status_code == 200
 
@@ -101,7 +101,7 @@ class GitterStream(GitterClient):
             bot_main(self, args, msg_json)
 
         except docopt.DocoptExit as e:
-            self.send_msg("```text\n{0}```".format(str(e)))
+            self.send("```text\n{0}```".format(str(e)))
 
     def parse_message(self, msg_json):
         """Parse a chat message for bot-mentions."""
