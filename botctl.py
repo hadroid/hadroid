@@ -90,7 +90,7 @@ class GitterStream(GitterClient):
                 try:
                     self.parse_message(json.loads(line.decode('utf8')))
                 except Exception as e:
-                    print(e)
+                    print(repr(e))
 
     def respond(self, cmd, msg_json):
         """Respond to a bot command."""

@@ -2,9 +2,13 @@
 Restaurant 2 Diner Droid.
 
 Parameter <day> can be either "today" or "tomorrow".
+For coffee module <n> stands for number of coffees bought or paid back for.
+If <n> is not specified, it stands for buying ONE coffee or paying back ALL
+of the coffee debt.
 
 Usage:
     @CERN-R2-D2 ping
+    @CERN-R2-D2 coffee (buy [<n>] | pay [<n>] | balance | stats)
     @CERN-R2-D2 menu <day>
     @CERN-R2-D2 echo <msg>...
     @CERN-R2-D2 selfdestruct
@@ -13,14 +17,28 @@ Examples:
     @CERN-R2-D2 menu tomorrow
     @CERN-R2-D2 echo Hello @/all!
 
+    Treat yourself a coffee:
+    @CERN-R2-D2 coffee buy
+
+    Treat yourself and your best buddy a coffee:
+    @CERN-R2-D2 coffee buy 2
+
+    Pay some of your debts
+    @CERN-R2-D2 coffee pay 2
+
+    Pay all of your debts
+    @CERN-R2-D2 coffee pay all
+
 Options:
-    -h --help   Show this help.
-    --version   Show version.
+    <n>           Number of coffees [default: 1].
+    -h --help     Show this help.
+    --version     Show version.
 """
 
 from __init__ import __version__
 from docopt import docopt
 from menu import fetch_menu, format_pretty_menu_msg
+from coffee import make_coffee
 from config import ADMINS
 import sys
 from time import sleep
@@ -72,6 +90,8 @@ def bot_main(client, args, msg_json=None):
             name = name.split()[0] if name.split()[0] else name
             client.send(
                 "I'm sorry {0}, I'm afraid I can't do that.".format(name))
+    elif args['coffee']:
+        make_coffee(client, args, msg_json)
 
 if __name__ == "__main__":
     args = docopt(__doc__, version=__version__)
