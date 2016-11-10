@@ -1,0 +1,52 @@
+[
+  [
+    {
+      "currency": "CHF",
+      "name": "Mijot\u00e9 de porc \u00e0 la tomate",
+      "type": "menu1",
+      "price": 8.4,
+      "date": "2016-11-10",
+      "restaurant": "r2"
+    },
+    {
+      "currency": "CHF",
+      "name": "Steak hach\u00e9 de veau",
+      "type": "menu2",
+      "price": 10.1,
+      "date": "2016-11-10",
+      "restaurant": "r2"
+    },
+    {
+      "currency": "CHF",
+      "name": "M\u00e9daillon de choux fleur et oeuf mollet",
+      "type": "vegetarian",
+      "price": 8.6,
+      "date": "2016-11-10",
+      "restaurant": "r2"
+    },
+    {
+      "currency": "CHF",
+      "name": "Paillard de Dinde, Onglet de Boeuf, Saucisse de veau",
+      "type": "grill",
+      "price": 8.5,
+      "date": "2016-11-10",
+      "restaurant": "r2"
+    },
+    {
+      "currency": "CHF",
+      "name": "Penne \u00e0 la carbonara",
+      "type": "pizza",
+      "price": 9.1,
+      "date": "2016-11-10",
+      "restaurant": "r2"
+    },
+    {
+      "currency": "CHF",
+      "name": "Filet de perche, sauce tartare",
+      "type": "speciality",
+      "price": 15.0,
+      "date": "2016-11-10",
+      "restaurant": "r2"
+    }
+  ]
+]

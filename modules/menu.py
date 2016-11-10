@@ -1,4 +1,5 @@
 """CERN Restaurants menu fetching module."""
+
 import requests
 import re
 
@@ -42,21 +43,19 @@ def type_formatter(type_):
         return ''
 
 
-def format_pretty_menu_msg(menu):
+def format_pretty_menu_msg(menu, day=None):
     """Format the menu with pretty words and pictures."""
     if not menu:
         return "Menu not available."
-    msg = ":fork_and_knife: Hey Y'@/all, it's lunch time! :clock12:\n"
-    msg += "Today's R2 selection:\n"
     items = []
+    msg = ("{0}'s R2 selection:\n".format(day.title())) if day else ''
     for i in menu:
         items.append('* {name} ({price} CHF) {type}\n'.format(
             name=i['name'],
             price=price_formatter(i['price']),
             type=type_formatter(i['type']),
         ))
-    msg += '\n'.join(items)
-    return msg
+    return msg + '\n'.join(items)
 
 
 if __name__ == '__main__':

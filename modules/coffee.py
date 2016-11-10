@@ -53,9 +53,9 @@ class CoffeeBook(object):
         user = msg['fromUser']
         uid = user['id']
 
-        if args['buy'] or args['pay']:
+        if args['drink'] or args['pay']:
             n = int(args['<n>']) if args['<n>'] else 1
-            v = n if args['buy'] else -n
+            v = n if args['drink'] else -n
             self.db['balance'][uid] += v
             self.db['ops'].append((uid, v, self.msg['sent']))
         elif args['balance']:
@@ -70,11 +70,17 @@ def make_coffee(client, args, msg):
     book.update_drinker(user)
     uid = user['id']
 
-    if args['buy'] or args['pay']:
+    # If no action was chosen, make 'drink' the default action
+    if not any(args[action] for action in ['drink', 'pay', 'balance', 'stats']):
+        args['drink'] = True
+
+    if args['drink'] or args['pay']:
         n = int(args['<n>']) if args['<n>'] else 1
-        v = n if args['buy'] else -n
+        v = n if args['drink'] else -n
+        prev_b = book.get_balance(uid)
         book.update_balance(uid, v, msg['sent'])
-        client.send("@{un} OK".format(un=user['username']))
+        client.send("@{un}, coffee balance changed ({b1} -> {b2})".format(
+            un=user['username'], b1=prev_b, b2=book.get_balance(uid)))
     elif args['balance']:
         blnc = book.get_balance(uid)
         client.send("@{un}'s coffee balance: {b}".format(
