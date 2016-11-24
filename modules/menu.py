@@ -3,6 +3,8 @@
 import requests
 import re
 
+MENU_USAGE = '(menu | m) [<day>] [--yall]'
+
 
 def wash_item(item):
     """Format some "ugly" menu items in a nicer way."""
@@ -58,8 +60,18 @@ def format_pretty_menu_msg(menu, day=None):
     return msg + '\n'.join(items)
 
 
-if __name__ == '__main__':
-    menu = fetch_menu()
-    menu2 = fetch_menu('tomorrow')
-    print(format_pretty_menu_msg(menu))
-    print(format_pretty_menu_msg(menu2))
+def menu(client, args, msg_json):
+    day = (args['<day>'] or 'today').lower()
+    days = ['today', 'tomorrow', 'monday', 'tuesday', 'wednesday',
+            'thursday', 'friday']
+    if day not in days:
+        msg = "Please specify a correct day ('today', 'tomorrow'" \
+              " or 'monday' to 'friday')."
+    else:
+        msg = ""
+        if args['--yall']:
+            msg += ":fork_and_knife: Hey Y'@/all," \
+                " it's lunch time! :clock12:\n"
+        menu = fetch_menu(day)
+        msg += format_pretty_menu_msg(menu, day=day)
+    client.send(msg)

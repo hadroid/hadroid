@@ -5,6 +5,9 @@ import os
 default_db_name = 'coffeedb.json'
 
 
+COFFEE_USAGE = '(coffee | c) [(drink [<n>] | pay [<n>] | balance | stats)]'
+
+
 class CoffeeBook(object):
     def __init__(self, db_name=None):
         self.fn = db_name or default_db_name
@@ -63,7 +66,7 @@ class CoffeeBook(object):
         self.save()
 
 
-def make_coffee(client, args, msg):
+def coffee(client, args, msg):
     book = CoffeeBook('coffeedb_{0}.json'.format(client.room_id))
 
     user = msg['fromUser']
@@ -71,7 +74,7 @@ def make_coffee(client, args, msg):
     uid = user['id']
 
     # If no action was chosen, make 'drink' the default action
-    if not any(args[action] for action in ['drink', 'pay', 'balance', 'stats']):
+    if not any(args[actn] for actn in ['drink', 'pay', 'balance', 'stats']):
         args['drink'] = True
 
     if args['drink'] or args['pay']:

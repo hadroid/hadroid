@@ -28,7 +28,8 @@ import json
 from config import ACCESS_TOKEN, QA_ROOM_ID, TEST_ROOM_ID, MAIN_ROOM_ID, \
     CMD_PREFIX, BOT_NAME
 import docopt
-from bot import __doc__ as bot_doc, bot_main, Client
+from client import Client
+from bot import __doc__ as bot_doc, bot_main
 from __init__ import __version__
 
 
@@ -46,7 +47,8 @@ def extras_patch(help, version, options, doc):
     if exc is not None:
         raise exc
 
-# patch the function
+
+# Apply the patch above to docopt.extras
 docopt.extras = extras_patch
 
 
@@ -58,7 +60,7 @@ class GitterClient(Client):
         self.token = token
         self.room_id = room_id
 
-    def send(self, msg):
+    def send(self, msg, block=False):
         """Send message to Gitter channel."""
         url = 'https://api.gitter.im/v1/rooms/{room_id}/chatMessages'.format(
             room_id=self.room_id)
@@ -67,7 +69,8 @@ class GitterClient(Client):
             'accept': 'application/json',
             'authorization': 'Bearer {token}'.format(token=self.token),
         }
-        data = json.dumps({'text': msg})
+        msg_fmt = '```text{msg}```' if block else '{msg}'
+        data = json.dumps({'text': msg_fmt.format(msg=msg)})
         r = requests.post(url, data=data, headers=headers)
         assert r.status_code == 200
 
