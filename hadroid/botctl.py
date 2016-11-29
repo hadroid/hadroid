@@ -4,18 +4,24 @@ Hadroid Controller.
 This is the controller for the bot, that sets up all of the plumbing for
 authenticating to Gitter, listening on channel stream or executing commands.
 
-The 'stream' command will just hook the boot on the "listening" mode on given
-channel. The 'exec' command will execute a single bot command and broadcast
-it on the Gitter channel (for actual commands see 'bot.py').
+Argument <room> can be either a pre-defined room from config (see config.ROOMS)
+or a Gitter room ID.
+
+Controller has multiple modes of operation:
+'gitter' executes a single bot command and broadcast it to the gitter channel
+'stream' launches the boot in the "listening" mode on given Gitter channel.
+'cron' launches the periodic task loop.
 
 Usage:
-    gitterbot stream (test|qa|prod) [--verbose]
-    gitterbot exec (test|qa|prod) <cmd>
+    botctl stream <room> [--verbose]
+    botctl cron <room> [--verbose]
+    botctl gitter <room> <cmd>
 
 Examples:
-    gitterbot stream qa
-    gitterbot exec test "menu today"
-    gitterbot exec qa "echo Hello everyone!"
+    botctl stream test
+    botctl cron test
+    botctl gitter test "menu today"
+    botctl gitter qa "echo Hello everyone!"
 
 Options:
     -h --help   Show this help.
@@ -28,12 +34,15 @@ import requests
 import json
 import docopt
 import shlex
+from datetime import timedelta
+from time import sleep
+from collections import namedtuple
 
 from hadroid import __version__
 from hadroid.client import Client
 from hadroid.bot import __doc__ as bot_doc, bot_main
-from hadroid.config import ACCESS_TOKEN, QA_ROOM_ID, TEST_ROOM_ID, MAIN_ROOM_ID, \
-    CMD_PREFIX, BOT_NAME
+from hadroid.config import ACCESS_TOKEN, ROOMS, CMD_PREFIX, BOT_NAME
+from hadroid.modules.cron import CronBook
 
 
 # We need to patch docopt's 'extras' function as it was hard sys-exiting
@@ -78,7 +87,7 @@ class GitterClient(Client):
         assert r.status_code == 200
 
 
-class GitterStream(GitterClient):
+class StreamClient(GitterClient):
     """Streaming Gitter client."""
 
     def listen(self):
@@ -125,19 +134,49 @@ class GitterStream(GitterClient):
             self.send("```text\n{0}```".format(str(e)))
 
 
+CronEvent = namedtuple('CronEvent', ['dt', 'idx', 'time', 'cmd'])
+
+
+class CronClient(GitterClient):
+    """Cron client."""
+
+    def listen(self):
+        while True:
+            cb = CronBook()
+            next_event = cb.get_next()
+            if next_event is not None and \
+                    next_event[0] < timedelta(seconds=60):
+                ce = CronEvent(*next_event)
+                sleep(ce.dt.seconds)
+                self.respond(ce.cmd, {})
+            else:
+                sleep(60)
+
+    def respond(self, cmd, msg_json):
+        """Respond to a bot command."""
+        try:
+            # Create a 'fake' CLI execution of the actual bot program
+            argv = cmd.split()
+            args = docopt.docopt(bot_doc, argv=argv)
+            bot_main(self, args, msg_json)
+
+        except docopt.DocoptExit as e:
+            self.send("```text\n{0}```".format(str(e)))
+
+
 if __name__ == '__main__':
     args = docopt.docopt(__doc__, version=__version__)
-    if args['qa']:
-        room_id = QA_ROOM_ID
-    elif args['test']:
-        room_id = TEST_ROOM_ID
-    elif args['prod']:
-        room_id = MAIN_ROOM_ID
+
+    room_id = ROOMS[args['<room>']] if args['<room>'] in ROOMS \
+        else args['<room>']
 
     if args['stream']:
-        client = GitterStream(ACCESS_TOKEN, room_id)
+        client = StreamClient(ACCESS_TOKEN, room_id)
         client.listen()
-    elif args['exec']:
+    if args['cron']:
+        client = CronClient(ACCESS_TOKEN, room_id)
+        client.listen()
+    elif args['gitter']:
         client = GitterClient(ACCESS_TOKEN, room_id)
         bot_argv = args['<cmd>'].split()  # split except quotes
         bot_args = docopt.docopt(bot_doc, argv=bot_argv,
