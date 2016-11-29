@@ -31,10 +31,11 @@ Options:
 """
 
 
-from __init__ import __version__
 from docopt import docopt
-from config import BOT_NAME, MODULES
-from client import StdoutClient
+
+from r2d2 import __version__
+from r2d2.config import BOT_NAME, MODULES
+from r2d2.client import StdoutClient
 
 # Patch the docstring
 usage_str = "\n".join(("    @{0} {1}".format(BOT_NAME,

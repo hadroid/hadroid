@@ -1,6 +1,7 @@
 __pycache__/
 *.py[cod]
 .cache/
+*.egg-info/
 
 # Gitter access token
 ACCESS_TOKEN

@@ -1,13 +1,15 @@
 """Bot configuration."""
-from modules.coffee import coffee, COFFEE_USAGE
-from modules.menu import menu, MENU_USAGE
-from modules.base import echo, whatsnew, changelog, ping, selfdestruct
 from collections import namedtuple
+from r2d2.modules.coffee import coffee, COFFEE_USAGE
+from r2d2.modules.menu import menu, MENU_USAGE
+from r2d2.modules.base import echo, whatsnew, changelog, ping, selfdestruct
+from r2d2.modules.cron import cron, CRON_USAGE
 Module = namedtuple('Module', ['names', 'main', 'usage'])
 # Register modules
 MODULES = (
     Module(('coffee', 'c'), coffee, COFFEE_USAGE),
     Module(('menu', 'm'), menu, MENU_USAGE),
+    Module(('cron', ), cron, CRON_USAGE),
     Module(('echo', ), echo, None),
     Module(('ping', ), ping, None),
     Module(('whatsnew', ), whatsnew, None),

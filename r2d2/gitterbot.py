@@ -9,13 +9,13 @@ channel. The 'exec' command will execute a single bot command and broadcast
 it on the Gitter channel (for actual commands see 'bot.py').
 
 Usage:
-    botctl stream (test|qa|prod)
-    botctl exec (test|qa|prod) <cmd>
+    gitterbot stream (test|qa|prod)
+    gitterbot exec (test|qa|prod) <cmd>
 
 Examples:
-    botctl stream qa
-    botctl exec test "menu today"
-    botctl exec qa "echo Hello everyone!"
+    gitterbot stream qa
+    gitterbot exec test "menu today"
+    gitterbot exec qa "echo Hello everyone!"
 
 Options:
     -h --help   Show this help.
@@ -25,12 +25,13 @@ Options:
 
 import requests
 import json
-from config import ACCESS_TOKEN, QA_ROOM_ID, TEST_ROOM_ID, MAIN_ROOM_ID, \
-    CMD_PREFIX, BOT_NAME
 import docopt
-from client import Client
-from bot import __doc__ as bot_doc, bot_main
-from __init__ import __version__
+
+from r2d2.client import Client
+from r2d2.bot import __doc__ as bot_doc, bot_main
+from r2d2 import __version__
+from r2d2.config import ACCESS_TOKEN, QA_ROOM_ID, TEST_ROOM_ID, MAIN_ROOM_ID, \
+    CMD_PREFIX, BOT_NAME
 
 
 # We need to patch docopt's 'extras' function as it was hard sys-exiting

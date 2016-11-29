@@ -2,8 +2,8 @@
 
 import sys
 from time import sleep
-# from ..config import ADMINS
-# from ..__init__ import CHANGELOG, WHATSNEW
+from r2d2 import CHANGELOG, WHATSNEW
+from r2d2.config import ADMINS
 
 
 def ping(client, args, msg_json):
