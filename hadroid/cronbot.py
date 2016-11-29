@@ -1,5 +1,5 @@
 """
-Timed-events controller for the R2-D2 bot.
+Timed-events controller for the bot.
 
 The 'run' command will simply refresh the events list in the loop
  and execute them when the time comes.
@@ -21,10 +21,10 @@ from collections import namedtuple
 from crontab import CronTab
 import os
 
-from r2d2.client import StdoutClient
-from r2d2.gitterbot import GitterClient, extras_patch
-from r2d2.bot import __doc__ as bot_doc, bot_main
-from r2d2.config import ACCESS_TOKEN, QA_ROOM_ID, TEST_ROOM_ID, MAIN_ROOM_ID
+from hadroid.client import StdoutClient
+from hadroid.gitterbot import GitterClient, extras_patch
+from hadroid.bot import __doc__ as bot_doc, bot_main
+from hadroid.config import ACCESS_TOKEN, QA_ROOM_ID, TEST_ROOM_ID, MAIN_ROOM_ID
 
 CronEvent = namedtuple('CronEvent', ['dt', 'idx', 'time', 'cmd'])
 
@@ -99,8 +99,8 @@ class CronBook(object):
         for idx, time, cmd in self.list():
             t_wait = timedelta(seconds=CronTab(time).next(t0))
             events.append((t_wait, idx, time, cmd))
-        events = sorted(events, key=lambda x: x[0])
-        return list(events)[0]
+        events = list(sorted(events, key=lambda x: x[0]))
+        return events[0] if events else None
 
 
 if __name__ == '__main__':

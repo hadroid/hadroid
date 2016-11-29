@@ -1,7 +1,7 @@
 """
-Restaurant 2 Diner Droid Controller.
+Hadroid Controller.
 
-This is the controller for the R2-D2 bot, that sets up all of the plumbing for
+This is the controller for the bot, that sets up all of the plumbing for
 authenticating to Gitter, listening on channel stream or executing commands.
 
 The 'stream' command will just hook the boot on the "listening" mode on given
@@ -9,7 +9,7 @@ channel. The 'exec' command will execute a single bot command and broadcast
 it on the Gitter channel (for actual commands see 'bot.py').
 
 Usage:
-    gitterbot stream (test|qa|prod)
+    gitterbot stream (test|qa|prod) [--verbose]
     gitterbot exec (test|qa|prod) <cmd>
 
 Examples:
@@ -19,6 +19,7 @@ Examples:
 
 Options:
     -h --help   Show this help.
+    --verbose   Show errors.
     --version   Show version.
 """
 
@@ -26,11 +27,12 @@ Options:
 import requests
 import json
 import docopt
+import shlex
 
-from r2d2.client import Client
-from r2d2.bot import __doc__ as bot_doc, bot_main
-from r2d2 import __version__
-from r2d2.config import ACCESS_TOKEN, QA_ROOM_ID, TEST_ROOM_ID, MAIN_ROOM_ID, \
+from hadroid import __version__
+from hadroid.client import Client
+from hadroid.bot import __doc__ as bot_doc, bot_main
+from hadroid.config import ACCESS_TOKEN, QA_ROOM_ID, TEST_ROOM_ID, MAIN_ROOM_ID, \
     CMD_PREFIX, BOT_NAME
 
 
@@ -70,7 +72,7 @@ class GitterClient(Client):
             'accept': 'application/json',
             'authorization': 'Bearer {token}'.format(token=self.token),
         }
-        msg_fmt = '```text{msg}```' if block else '{msg}'
+        msg_fmt = '```text\n{msg}\n```' if block else '{msg}'
         data = json.dumps({'text': msg_fmt.format(msg=msg)})
         r = requests.post(url, data=data, headers=headers)
         assert r.status_code == 200
@@ -92,20 +94,11 @@ class GitterStream(GitterClient):
         for line in r.iter_lines():
             if line and len(line) > 1:
                 try:
-                    self.parse_message(json.loads(line.decode('utf8')))
+                    msg = line.decode('utf8')
+                    print(msg)
+                    self.parse_message(json.loads(msg))
                 except Exception as e:
                     print(repr(e))
-
-    def respond(self, cmd, msg_json):
-        """Respond to a bot command."""
-        try:
-            # Create a 'fake' CLI execution of the actual bot program
-            argv = cmd.split()
-            args = docopt.docopt(bot_doc, argv=argv, version=__version__)
-            bot_main(self, args, msg_json)
-
-        except docopt.DocoptExit as e:
-            self.send("```text\n{0}```".format(str(e)))
 
     def parse_message(self, msg_json):
         """Parse a chat message for bot-mentions."""
@@ -119,6 +112,17 @@ class GitterStream(GitterClient):
         except StopIteration:
             return
         self.respond(text, msg_json)
+
+    def respond(self, cmd, msg_json):
+        """Respond to a bot command."""
+        try:
+            # Create a 'fake' CLI execution of the actual bot program
+            argv = shlex.split(cmd.replace('``', '"'))
+            args = docopt.docopt(bot_doc, argv=argv, version=__version__)
+            bot_main(self, args, msg_json)
+
+        except docopt.DocoptExit as e:
+            self.send("```text\n{0}```".format(str(e)))
 
 
 if __name__ == '__main__':

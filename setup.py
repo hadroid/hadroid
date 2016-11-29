@@ -1,4 +1,4 @@
-"""R2-D2 Droid."""
+"""Hadroid setup."""
 
 from setuptools import setup, find_packages
 from codecs import open
@@ -10,11 +10,11 @@ with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
     long_description = f.read()
 
 setup(
-    name='r2d2',
+    name='hadroid',
     version='0.1.0',
     description='A simple Python chatbot',
     long_description=long_description,
-    url='https://github.com/krzysztof/r2d2',
+    url='https://github.com/krzysztof/hadroid',
     author='Krzysztof Nowak',
     author_email='kn@linux.com',
     license='GPLv3',

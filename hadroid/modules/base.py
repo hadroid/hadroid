@@ -2,8 +2,6 @@
 
 import sys
 from time import sleep
-from r2d2 import CHANGELOG, WHATSNEW
-from r2d2.config import ADMINS
 
 
 def ping(client, args, msg_json):
@@ -16,14 +14,17 @@ def echo(client, args, msg_json):
 
 
 def changelog(client, args, msg_json):
-    client.send(CHANGELOG, block=True)
+    pass
+    # client.send(CHANGELOG, block=True)
 
 
 def whatsnew(client, args, msg_json):
-    client.send(WHATSNEW, block=True)
+    pass
+    # client.send(WHATSNEW, block=True)
 
 
 def selfdestruct(client, args, msg_json):
+    from hadroid.config import ADMINS
     if msg_json['fromUser']['username'] in ADMINS:
         client.send("Self destructing in 3...")
         sleep(1)

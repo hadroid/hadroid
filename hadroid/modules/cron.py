@@ -1,11 +1,11 @@
 """Cron control module."""
 
-from r2d2.cronbot import CronBook
 
 CRON_USAGE = 'cron (add <time> <cmd> | remove <idx> | list)'
 
 
 def cron(client, args, msg_json):
+    from hadroid.cronbot import CronBook
     cb = CronBook()
     if args['add']:
         cb.add(args['<time>'], args['<cmd>'])

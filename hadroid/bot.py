@@ -1,6 +1,4 @@
 """
-Restaurant 2 Diner Droid.
-
 Parameter <day> can be either 'today', 'tomorrow' or 'moday'-'friday'.
 For coffee module <n> stands for number of coffees drank or paid for.
 If <n> is not specified, it stands for buying or paying for one coffee.
@@ -33,9 +31,9 @@ Options:
 
 from docopt import docopt
 
-from r2d2 import __version__
-from r2d2.config import BOT_NAME, MODULES
-from r2d2.client import StdoutClient
+from hadroid import __version__
+from hadroid.config import BOT_NAME, MODULES
+from hadroid.client import StdoutClient
 
 # Patch the docstring
 usage_str = "\n".join(("    @{0} {1}".format(BOT_NAME,

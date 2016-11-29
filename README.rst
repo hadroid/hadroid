@@ -1,4 +1,4 @@
-R2-D2 Gitter bot.
+Hadroid Gitter bot.
 
 Usage
 =====
