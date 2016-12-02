@@ -4,7 +4,7 @@ Hadroid Controller.
 This is the controller for the bot, that sets up all of the plumbing for
 authenticating to Gitter, listening on channel stream or executing commands.
 
-Argument <room> can be either a pre-defined room from config (see config.ROOMS)
+Argument <room> can be either a pre-defined room from config (see C.ROOMS)
 or a Gitter room ID.
 
 Controller has multiple modes of operation:
@@ -15,7 +15,8 @@ Controller has multiple modes of operation:
 Usage:
     botctl stream <room> [--verbose]
     botctl cron <room> [--verbose]
-    botctl gitter <room> <cmd>
+    botctl gitter <room> <cmd>...
+    botctl stdout <cmd>...
 
 Examples:
     botctl stream test
@@ -32,35 +33,16 @@ Options:
 
 import requests
 import json
-import docopt
 import shlex
 from datetime import timedelta
 from time import sleep
 from collections import namedtuple
 
+from hadroid import docopt2 as docopt
 from hadroid import __version__, C
-from hadroid.client import Client
+from hadroid.client import Client, StdoutClient
 from hadroid.bot import __doc__ as bot_doc, bot_main
 from hadroid.modules.cron import CronBook
-
-
-# We need to patch docopt's 'extras' function as it was hard sys-exiting
-# the bot after '--help/-h' or '--version' commands
-def extras_patch(help, version, options, doc):
-    """Patch of docopt.extra handler."""
-    exc = None
-    if help and any((o.name in ('-h', '--help')) and o.value for o in options):
-        exc = docopt.DocoptExit()
-        exc.args = (doc.strip("\n"), )
-    if version and any(o.name == '--version' and o.value for o in options):
-        exc = docopt.DocoptExit()
-        exc.args = (version, )
-    if exc is not None:
-        raise exc
-
-
-# Apply the patch above to docopt.extras
-docopt.extras = extras_patch
 
 
 class GitterClient(Client):
@@ -170,14 +152,17 @@ if __name__ == '__main__':
         else args['<room>']
 
     if args['stream']:
-        client = StreamClient(C.ACCESS_TOKEN, room_id)
+        client = StreamClient(C.GITTER_PERSONAL_ACCESS_TOKEN, room_id)
         client.listen()
     if args['cron']:
-        client = CronClient(C.ACCESS_TOKEN, room_id)
+        client = CronClient(C.GITTER_PERSONAL_ACCESS_TOKEN, room_id)
         client.listen()
     elif args['gitter']:
-        client = GitterClient(C.ACCESS_TOKEN, room_id)
-        bot_argv = args['<cmd>'].split()  # split except quotes
+        client = GitterClient(C.GITTER_PERSONAL_ACCESS_TOKEN, room_id)
+        bot_argv = args['<cmd>']  # split except quotes
         bot_args = docopt.docopt(bot_doc, argv=bot_argv,
                                  version=__version__)
         bot_main(client, bot_args)
+    elif args['stdout']:
+        args = docopt.docopt(bot_doc, args['<cmd>'], version=__version__)
+        bot_main(StdoutClient(), args)

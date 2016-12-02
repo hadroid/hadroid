@@ -14,16 +14,6 @@ def echo(client, args, msg_json):
     client.send(msg)
 
 
-def changelog(client, args, msg_json):
-    pass
-    # client.send(CHANGELOG, block=True)
-
-
-def whatsnew(client, args, msg_json):
-    pass
-    # client.send(WHATSNEW, block=True)
-
-
 def selfdestruct(client, args, msg_json):
     if msg_json['fromUser']['username'] in C.ADMINS:
         client.send("Self destructing in 3...")

@@ -22,19 +22,22 @@ def load_config_from_env():
 class Config(object):
     """Config object."""
     def __init__(self):
-        self._cfg = None
+        self.cfg = None
 
     def __getattribute__(self, attr):
-        self_cfg = super(Config, self).__getattribute__('_cfg')
+        self_cfg = super(Config, self).__getattribute__('cfg')
         if self_cfg is None:
             import hadroid.config
             # Load the default configuration
             self_cfg = load_config_from_module(hadroid.config)
             # Update with user configuration
             self_cfg.update(load_config_from_env())
-            self._cfg = self_cfg
+            self.cfg = self_cfg
         if attr in self_cfg:
             return self_cfg[attr]
+        else:
+            return super(Config, self).__getattribute__(attr)
+
 
 C = Config()
 __version__ = '0.1.0'
