@@ -38,10 +38,9 @@ from datetime import timedelta
 from time import sleep
 from collections import namedtuple
 
-from hadroid import __version__
+from hadroid import __version__, C
 from hadroid.client import Client
 from hadroid.bot import __doc__ as bot_doc, bot_main
-from hadroid.config import ACCESS_TOKEN, ROOMS, CMD_PREFIX, BOT_NAME
 from hadroid.modules.cron import CronBook
 
 
@@ -113,10 +112,10 @@ class StreamClient(GitterClient):
         """Parse a chat message for bot-mentions."""
         text = msg_json['text']
         # ignore messages from the bot himself
-        if msg_json['fromUser']['username'] == BOT_NAME:
+        if msg_json['fromUser']['username'] == C.BOT_NAME:
             return
         try:  # respond only to some bot-prefixed messages
-            prefix = next(p for p in CMD_PREFIX if text.startswith(p))
+            prefix = next(p for p in C.CMD_PREFIX if text.startswith(p))
             text = text.lstrip(prefix).strip()
         except StopIteration:
             return
@@ -167,17 +166,17 @@ class CronClient(GitterClient):
 if __name__ == '__main__':
     args = docopt.docopt(__doc__, version=__version__)
 
-    room_id = ROOMS[args['<room>']] if args['<room>'] in ROOMS \
+    room_id = C.ROOMS[args['<room>']] if args['<room>'] in C.ROOMS \
         else args['<room>']
 
     if args['stream']:
-        client = StreamClient(ACCESS_TOKEN, room_id)
+        client = StreamClient(C.ACCESS_TOKEN, room_id)
         client.listen()
     if args['cron']:
-        client = CronClient(ACCESS_TOKEN, room_id)
+        client = CronClient(C.ACCESS_TOKEN, room_id)
         client.listen()
     elif args['gitter']:
-        client = GitterClient(ACCESS_TOKEN, room_id)
+        client = GitterClient(C.ACCESS_TOKEN, room_id)
         bot_argv = args['<cmd>'].split()  # split except quotes
         bot_args = docopt.docopt(bot_doc, argv=bot_argv,
                                  version=__version__)

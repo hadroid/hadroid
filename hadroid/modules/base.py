@@ -2,6 +2,7 @@
 
 import sys
 from time import sleep
+from hadroid import C
 
 
 def ping(client, args, msg_json):
@@ -24,8 +25,7 @@ def whatsnew(client, args, msg_json):
 
 
 def selfdestruct(client, args, msg_json):
-    from hadroid.config import ADMINS
-    if msg_json['fromUser']['username'] in ADMINS:
+    if msg_json['fromUser']['username'] in C.ADMINS:
         client.send("Self destructing in 3...")
         sleep(1)
         client.send("2...")

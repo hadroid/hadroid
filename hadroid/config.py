@@ -1,11 +1,17 @@
-"""Bot configuration."""
+"""Default Hadroid configuration."""
+
 from collections import namedtuple
+
 from hadroid.modules.coffee import coffee, COFFEE_USAGE
 from hadroid.modules.menu import menu, MENU_USAGE
 from hadroid.modules.base import echo, whatsnew, changelog, ping, selfdestruct
 from hadroid.modules.cron import cron, CRON_USAGE
+
 Module = namedtuple('Module', ['names', 'main', 'usage'])
-# Register modules
+
+#
+# Default Configuration
+#
 MODULES = (
     Module(('coffee', 'c'), coffee, COFFEE_USAGE),
     Module(('menu', 'm'), menu, MENU_USAGE),
@@ -17,16 +23,16 @@ MODULES = (
     Module(('selfdestruct', ), selfdestruct, None),
 )
 
-with open('ACCESS_TOKEN', 'r') as fp:
-    ACCESS_TOKEN = fp.read().strip()
+ACCESS_TOKEN = 'YOUR_GITTER_ACCESS_TOKEN'
+
 ROOMS = {
-    'prod': '54ca0dd2db8155e6700f36e1',  # AfricanPenguin (Production)
-    'qa': '5813d38ed73408ce4f31907b',  # R2-D2 Repair Station (QA)
-    'test': '5813d47bd73408ce4f3190a4',  # R2-D2 Repair Station (Testing)
+    'myroom': 'GITTER_ROOM_ID'
 }
 
-BOT_NAME = 'Hadroid'  # Change
+BOT_NAME = 'Hadroid'
+
 # Respond to !<command> or @Hadroid <command>
 CMD_PREFIX = ('!', '@' + BOT_NAME)
 
+# Gitter username of the bot admins
 ADMINS = ('krzysztof', )
