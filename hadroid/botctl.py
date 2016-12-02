@@ -34,11 +34,12 @@ Options:
 import requests
 import json
 import shlex
+import docopt
 from datetime import timedelta
 from time import sleep
 from collections import namedtuple
 
-from hadroid import docopt2 as docopt
+from hadroid.docopt2 import docopt_parse
 from hadroid import __version__, C
 from hadroid.client import Client, StdoutClient
 from hadroid.bot import __doc__ as bot_doc, bot_main
@@ -64,8 +65,7 @@ class GitterClient(Client):
         }
         msg_fmt = '```text\n{msg}\n```' if block else '{msg}'
         data = json.dumps({'text': msg_fmt.format(msg=msg)})
-        r = requests.post(url, data=data, headers=headers)
-        assert r.status_code == 200
+        requests.post(url, data=data, headers=headers)
 
 
 class StreamClient(GitterClient):
@@ -108,7 +108,7 @@ class StreamClient(GitterClient):
         try:
             # Create a 'fake' CLI execution of the actual bot program
             argv = shlex.split(cmd.replace('``', '"'))
-            args = docopt.docopt(bot_doc, argv=argv, version=__version__)
+            args = docopt_parse(bot_doc, argv=argv, version=__version__)
             bot_main(self, args, msg_json)
 
         except docopt.DocoptExit as e:
@@ -126,19 +126,19 @@ class CronClient(GitterClient):
             cb = CronBook()
             next_event = cb.get_next()
             if next_event is not None and \
-                    next_event[0] < timedelta(seconds=60):
+                    next_event[0] < timedelta(seconds=30):
                 ce = CronEvent(*next_event)
                 sleep(ce.dt.seconds)
                 self.respond(ce.cmd, {})
             else:
-                sleep(30)
+                sleep(15)
 
     def respond(self, cmd, msg_json):
         """Respond to a bot command."""
         try:
             # Create a 'fake' CLI execution of the actual bot program
             argv = cmd.split()
-            args = docopt.docopt(bot_doc, argv=argv)
+            args = docopt_parse(bot_doc, argv=argv)
             bot_main(self, args, msg_json)
 
         except docopt.DocoptExit as e:
@@ -159,10 +159,8 @@ if __name__ == '__main__':
         client.listen()
     elif args['gitter']:
         client = GitterClient(C.GITTER_PERSONAL_ACCESS_TOKEN, room_id)
-        bot_argv = args['<cmd>']  # split except quotes
-        bot_args = docopt.docopt(bot_doc, argv=bot_argv,
-                                 version=__version__)
+        bot_args = docopt_parse(bot_doc, args['<cmd>'], version=__version__)
         bot_main(client, bot_args)
     elif args['stdout']:
-        args = docopt.docopt(bot_doc, args['<cmd>'], version=__version__)
-        bot_main(StdoutClient(), args)
+        bot_args = docopt_parse(bot_doc, args['<cmd>'], version=__version__)
+        bot_main(StdoutClient(), bot_args)

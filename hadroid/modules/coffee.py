@@ -9,7 +9,7 @@ COFFEE_USAGE = '(coffee | c) [(drink [<n>] | pay [<n>] | balance | stats)]'
 
 class CoffeeBook(object):
     def __init__(self, db_name='coffeedb.json'):
-        self.fn = db_name or default_db_name
+        self.fn = db_name
         if self.exists():
             self.load()
         else:

@@ -13,6 +13,7 @@ Module = namedtuple('Module', ['names', 'main', 'usage'])
 # Default Configuration
 #
 MODULES = (
+    Module(('--help', ), None, None),
     Module(('coffee', 'c'), coffee, COFFEE_USAGE),
     Module(('menu', 'm'), menu, MENU_USAGE),
     Module(('cron', ), cron, CRON_USAGE),
@@ -37,6 +38,8 @@ ADMINS = ('krzysztof', )
 
 # Bot docstring configuration
 DOC_HEADER = """
+Hadroid Help Manual.
+
 Parameter <day> can be either 'today', 'tomorrow' or 'moday'-'friday'.
 For coffee module <n> stands for number of coffees drank or paid for.
 If <n> is not specified, it stands for buying or paying for one coffee.
