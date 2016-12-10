@@ -131,7 +131,7 @@ class CronClient(GitterClient):
                 sleep(ce.dt.seconds)
                 self.respond(ce.cmd, {})
             else:
-                sleep(15)
+                sleep(20)
 
     def respond(self, cmd, msg_json):
         """Respond to a bot command."""

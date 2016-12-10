@@ -15,14 +15,10 @@ Options:
 from hadroid import __version__, C
 
 # Patch the docstring
-usage_str = "\n".join(("    @{0} {1}".format(C.BOT_NAME,
-                                             m.usage or m.names[0])
-                       for m in C.MODULES))
-__doc__ = __doc__.format(botname=C.BOT_NAME,
-                         usage=usage_str,
-                         header=C.DOC_HEADER.format(botname=C.BOT_NAME),
-                         examples=C.DOC_EXAMPLES.format(botname=C.BOT_NAME),
-                         options=C.DOC_OPTIONS.format(botname=C.BOT_NAME))
+__doc__ = __doc__.format(header=C.DOC_HEADER,
+                         usage=C.DOC_USAGE,
+                         examples=C.DOC_EXAMPLES,
+                         options=C.DOC_OPTIONS)
 
 
 def bot_main(client, args, msg_json=None):

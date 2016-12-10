@@ -9,6 +9,19 @@ from hadroid.modules.cron import cron, CRON_USAGE
 
 Module = namedtuple('Module', ['names', 'main', 'usage'])
 
+
+def build_usage_str(modules, botname):
+    """Build the bot usage string from the list of modules.
+
+    :type botname: str
+    :type modules: (Module)
+    :param modules: iterable of Module objects
+    """
+    return"\n".join(("    @{0} {1}".format(botname,
+                                           m.usage or m.names[0])
+                     for m in modules))
+
+
 #
 # Default Configuration
 #
@@ -45,7 +58,9 @@ For coffee module <n> stands for number of coffees drank or paid for.
 If <n> is not specified, it stands for buying or paying for one coffee.
 Instead direct message you can also preceed the commands with a bang '!',
 for example instead of '@{botname} menu' you can just type '!menu'.
-"""[:-1]
+"""[:-1].format(botname=BOT_NAME)
+
+DOC_USAGE = build_usage_str(MODULES, BOT_NAME)
 
 DOC_EXAMPLES = """
     @{botname} menu tomorrow
@@ -59,7 +74,7 @@ DOC_EXAMPLES = """
 
     Pay your coffee debts:
     @{botname} coffee pay 2
-"""[1:-1]
+"""[1:-1].format(botname=BOT_NAME)
 
 DOC_OPTIONS = """
     <n>           Number of coffees [default: 1].
