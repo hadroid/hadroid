@@ -37,10 +37,6 @@ MODULES = (
 
 GITTER_PERSONAL_ACCESS_TOKEN = 'YOUR_GITTER_PERSONAL_ACCESS_TOKEN'
 
-ROOMS = {
-    'myroom': 'GITTER_ROOM_ID'
-}
-
 BOT_NAME = 'Hadroid'
 
 # Respond to !<command> or @Hadroid <command>

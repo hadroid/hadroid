@@ -21,7 +21,7 @@ Copy the default configuration file:
    $ cp hadroid/config.py myconfig.py
 
 Edit the ``myconfig.py`` and set the ``GITTER_PERSONAL_ACCESS_TOKEN`` to your
-Gitter API token. It is convenient to add at least one room to ROOMS.
+Gitter API token.
 
 Point to your config with environmental variable:
 
@@ -53,13 +53,18 @@ or through the controller with ``stdout`` client:
 
 Run the bot on Gitter
 ~~~~~~~~~~~~~~~~~~~~
-Run the bot on the ``mytestroom`` (if defined in ROOMS inside config) or
-by Gitter room ID:
+Bot will listen for messages and reply back on a single channel.
+This can be either an orgazation channel, repository or a private one-on-one
+chat with a user. The bot needs to be already in the room, or at least one
+private message needs to be send to the bot.
+
+Run the bot on some of the room he`s already in, or chat with him privately:
 
 .. code-block:: console
 
-   $ python hadroid/botctl.py stream mytestroom --verbose
-   $ python hadroid/botctl.py stream 1234567890 --verbose
+   $ python hadroid/botctl.py stream 'myorg/myroom' --verbose
+   $ python hadroid/botctl.py stream 'myorg/somerepo' --verbose
+   $ python hadroid/botctl.py stream 'myusername' --verbose
 
 For CRON commands, run a CRON daemon in a separate shell:
 

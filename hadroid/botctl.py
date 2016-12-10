@@ -4,8 +4,8 @@ Hadroid Controller.
 This is the controller for the bot, that sets up all of the plumbing for
 authenticating to Gitter, listening on channel stream or executing commands.
 
-Argument <room> can be either a pre-defined room from config (see C.ROOMS)
-or a Gitter room ID.
+Argument <room> can be either an organization or repo name room name, e.g.:
+'myorg', 'myorg/myrepo', or a Gitter username for a One-To-One conversation.
 
 Controller has multiple modes of operation:
 'gitter' executes a single bot command and broadcast it to the gitter channel
@@ -49,38 +49,42 @@ from hadroid.modules.cron import CronBook
 class GitterClient(Client):
     """REST Gitter client."""
 
-    def __init__(self, token, room_id):
+    def __init__(self, token, default_room_id=None):
         """Initialize Gitter client."""
         self.token = token
-        self.room_id = room_id
-
-    def send(self, msg, block=False):
-        """Send message to Gitter channel."""
-        url = 'https://api.gitter.im/v1/rooms/{room_id}/chatMessages'.format(
-            room_id=self.room_id)
-        headers = {
+        self.default_room_id = default_room_id
+        self.headers = {
             'content-type': 'application/json',
             'accept': 'application/json',
             'authorization': 'Bearer {token}'.format(token=self.token),
         }
+
+    def resolve_room_id(self, room):
+        """Resolve room or username to a Gitter RoomID."""
+        url = 'https://api.gitter.im/v1/rooms'
+        resp = requests.get(url, headers=self.headers)
+        for r in resp.json():
+            if (not r['oneToOne'] and r['uri'] == room) or \
+                    (r['oneToOne'] and r['user']['username'] == room):
+                return r['id']
+
+    def send(self, msg, room_id=None, block=False):
+        """Send message to Gitter channel."""
+        url = 'https://api.gitter.im/v1/rooms/{room_id}/chatMessages'.format(
+            room_id=(room_id or self.default_room_id))
         msg_fmt = '```text\n{msg}\n```' if block else '{msg}'
         data = json.dumps({'text': msg_fmt.format(msg=msg)})
-        requests.post(url, data=data, headers=headers)
+        requests.post(url, data=data, headers=self.headers)
 
 
 class StreamClient(GitterClient):
     """Streaming Gitter client."""
 
-    def listen(self):
+    def listen(self, room_id=None):
         """Listen on the channel."""
         url = 'https://stream.gitter.im/v1/rooms/{room}/chatMessages'.format(
-            room=self.room_id)
-        headers = {
-            'content-type': 'application/json',
-            'accept': 'application/json',
-            'authorization': 'Bearer {token}'.format(token=self.token),
-        }
-        r = requests.get(url, headers=headers, stream=True)
+            room=self.default_room_id)
+        r = requests.get(url, headers=self.headers, stream=True)
         for line in r.iter_lines():
             if line and len(line) > 1:
                 try:
@@ -148,8 +152,8 @@ class CronClient(GitterClient):
 if __name__ == '__main__':
     args = docopt.docopt(__doc__, version=__version__)
 
-    room_id = C.ROOMS[args['<room>']] if args['<room>'] in C.ROOMS \
-        else args['<room>']
+    room_id = GitterClient(C.GITTER_PERSONAL_ACCESS_TOKEN).resolve_room_id(
+        args['<room>'])
 
     if args['stream']:
         client = StreamClient(C.GITTER_PERSONAL_ACCESS_TOKEN, room_id)
