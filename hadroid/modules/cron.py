@@ -2,15 +2,26 @@
 
 import json
 import pytz
-from datetime import datetime, timedelta
+from datetime import datetime
 from crontab import CronTab
+import uuid
 import os
 
 CRON_USAGE = 'cron ((add | a) <time> <cmd> | (remove | rm) <idx> |' \
-    ' (list | ls) | (timezone [<tzname>]) | next)'
+    ' (list | ls) | (timezone [<tzname>]))'
 
 
 class CronBook(object):
+    """This is the JSON-based database implementation of the cron events.
+
+    Each event is defined as a dictionary containting:
+
+        eventId - unique UUID for each event definition
+        time - CRON-like time signature of the event
+        command - Bot command to execute
+        roomId - Gitter channel on which the event is to be executed
+        timezone - timezone according to which the event is to be executed
+    """
     def __init__(self, cronbook_name='cronbook.json'):
         self.fn = cronbook_name
         if self.exists():
@@ -20,8 +31,8 @@ class CronBook(object):
 
     def create(self):
         self.db = {
-            'jobs': [],
-            'tz': 'Europe/Zurich',
+            'events': [],
+            'defaultTimezone': 'Europe/Zurich',
         }
 
     def save(self):
@@ -33,43 +44,71 @@ class CronBook(object):
             self.db = json.load(fp)
 
     def set_timezone(self, tz):
-        self.db['tz'] = tz
+        self.db['defaultTimezone'] = tz
         self.save()
 
     def get_timezone(self):
-        return self.db['tz']
+        return self.db['defaultTimezone']
 
     def exists(self):
         return os.path.isfile(self.fn)
 
-    def add(self, time, cmd):
-        self.db['jobs'].append((time, cmd))
+    def add(self, time, command, room_id):
+        event = {
+            'eventId': str(uuid.uuid4()),
+            'time': time,
+            'command': command,
+            'roomId': room_id,
+            'timezone': self.get_timezone()
+        }
+        self.db['events'].append(event)
         self.save()
 
-    def list(self):
-        return [(i, time, cmd) for i, (time, cmd) in
-                enumerate(self.db['jobs'])]
+    def list(self, room_id=None):
+        events = list(self.db['events'])
+        if room_id is not None:
+            events = [ev for ev in events if ev['roomId'] == room_id]
+        return [(i, event['time'], event['command']) for i, event in
+                enumerate(events)]
 
-    def remove(self, idx):
-        del self.db['jobs'][idx]
+    def _remove_by_id(self, ev_id):
+        self.db['events'] = [ev for ev in self.db['events']
+                             if ev['eventId'] != ev_id]
         self.save()
 
-    def get_next(self):
+    def get_by_id(self, ev_id):
+        return next((ev for ev in self.db['events'] if ev['eventId'] == ev_id),
+                    None)
+
+    def remove(self, idx, room_id=None):
+        events = list(self.db['events'])
+        if room_id is not None:
+            events = [ev for ev in events if ev['roomId'] == room_id]
+        del_ev = events[idx]
+        self._remove_by_id(del_ev['eventId'])
+
+    @staticmethod
+    def get_event_dt_utc(event):
+            ev_tz = pytz.timezone(event['timezone'])
+            ev_now = datetime.now(ev_tz)  # Local 'now' time of event
+            ts_next = CronTab(event['time']).next(ev_now, delta=False)
+            dt_next = ev_tz.localize(datetime.fromtimestamp(ts_next))
+            return dt_next.astimezone(pytz.utc)
+
+    def get_upcoming_events(self):
         events = []
-        t0 = datetime.now(pytz.timezone(self.db['tz']))
-        for idx, time, cmd in self.list():
-            t_wait = timedelta(seconds=CronTab(time).next(t0))
-            events.append((t_wait, idx, time, cmd))
-        events = list(sorted(events, key=lambda x: x[0]))
-        return events[0] if events else None
+        for ev in self.db['events']:
+            ev_dt = self.get_event_dt_utc(ev)
+            events.append((ev['eventId'], ev_dt))
+        return events
 
 
 def cron(client, args, msg_json):
     cb = CronBook()
     if args['add'] or args['a']:
-        cb.add(args['<time>'], args['<cmd>'])
+        cb.add(args['<time>'], args['<cmd>'], room_id=client.room_id)
     elif args['list'] or args['ls']:
-        jobs = cb.list()
+        jobs = cb.list(client.room_id)
         if jobs:
             msg = "\n".join("{0} ({1}): '{2}'".format(i, t, c)
                             for i, t, c in jobs)
@@ -79,12 +118,9 @@ def cron(client, args, msg_json):
             client.send(msg)
     elif args['remove'] or args['rm']:
         idx = int(args['<idx>'])
-        cb.remove(idx)
+        cb.remove(idx, room_id=client.room_id)
     elif args['timezone']:
         if args['<tzname>']:
             cb.set_timezone(args['<tzname>'])
         msg = "Current CRON TimeZone: {0}".format(cb.get_timezone())
         client.send(msg)
-    elif args['next']:
-        n = cb.get_next()
-        client.send(str(n), block=True)
