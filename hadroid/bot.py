@@ -12,7 +12,7 @@ Options:
 """
 
 
-from hadroid import __version__, C
+from hadroid import C, __version__
 
 # Patch the docstring
 __doc__ = __doc__.format(header=C.DOC_HEADER,

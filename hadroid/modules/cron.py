@@ -1,11 +1,12 @@
 """Cron control module."""
 
 import json
-import pytz
-from datetime import datetime
-from crontab import CronTab
-import uuid
 import os
+import uuid
+from datetime import datetime
+
+import pytz
+from crontab import CronTab
 
 CRON_USAGE = 'cron ((add | a) <time> <cmd> | (remove | rm) <idx> |' \
     ' (list | ls) | (timezone [<tzname>]))'

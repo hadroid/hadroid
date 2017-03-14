@@ -31,19 +31,22 @@ Options:
 """
 
 
-import requests
 import json
 import shlex
-import docopt
+import sys
+from collections import namedtuple
 from datetime import datetime
 from time import sleep
-import pytz
-from collections import namedtuple
 
-from hadroid.docopt2 import docopt_parse
-from hadroid import __version__, C
+import docopt
+import pytz
+import requests
+
+from hadroid import C, __version__
+from hadroid.bot import __doc__ as bot_doc
+from hadroid.bot import bot_main
 from hadroid.client import Client, StdoutClient
-from hadroid.bot import __doc__ as bot_doc, bot_main
+from hadroid.docopt2 import docopt_parse
 from hadroid.modules.cron import CronBook
 
 
@@ -171,12 +174,16 @@ class CronClient(GitterClient):
 if __name__ == '__main__':
     args = docopt.docopt(__doc__, version=__version__)
 
+    if args['stdout']:
+        bot_args = docopt_parse(bot_doc, args['<cmd>'], version=__version__)
+        sys.exit(bot_main(StdoutClient(), bot_args))
+
     room_id = GitterClient(C.GITTER_PERSONAL_ACCESS_TOKEN).resolve_room_id(
         args['<room>'])
 
     if args['stream']:
         client = StreamClient(C.GITTER_PERSONAL_ACCESS_TOKEN, room_id)
-        client.listen()
+        sys.exit(client.listen())
     if args['cron']:
         client = CronClient(C.GITTER_PERSONAL_ACCESS_TOKEN, room_id)
         client.listen()
@@ -184,6 +191,3 @@ if __name__ == '__main__':
         client = GitterClient(C.GITTER_PERSONAL_ACCESS_TOKEN, room_id)
         bot_args = docopt_parse(bot_doc, args['<cmd>'], version=__version__)
         bot_main(client, bot_args)
-    elif args['stdout']:
-        bot_args = docopt_parse(bot_doc, args['<cmd>'], version=__version__)
-        bot_main(StdoutClient(), bot_args)
