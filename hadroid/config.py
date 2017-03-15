@@ -41,6 +41,9 @@ DEBUG = False
 
 BOT_NAME = 'Hadroid'
 
+# Set the default Gitter room for the bot to join
+ROOM = ''
+
 # Respond to !<command> or @Hadroid <command>
 CMD_PREFIX = ('!', '@' + BOT_NAME)
 

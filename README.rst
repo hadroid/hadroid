@@ -58,7 +58,7 @@ This can be either an orgazation channel, repository or a private one-on-one
 chat with a user. The bot needs to be already in the room, or at least one
 private message needs to be send to the bot.
 
-Run the bot on some of the room he`s already in, or chat with him privately:
+Run the bot on some of the room he's already in, or chat with him privately:
 
 .. code-block:: console
 
@@ -71,3 +71,26 @@ For CRON commands, run a CRON daemon in a separate shell:
 .. code-block:: console
 
    $ python hadroid/botctl.py cron mytestroom --verbose
+
+
+Deployment
+==========
+To deploy Hadroid you can use the provided `fabile.py
+<http://docs.fabfile.org/en/latest/>`_ (tested on commonly used VPS vanilla
+instances of Ubuntu 16.04 and Debian 8) in the following manner:
+
+.. code-block:: console
+
+   $ # fabtools is a helper library for Fabric
+   $ pip2 install --user fabric fabtools
+
+   $ # "bootstrap" has to run once for each machine you plan to deploy
+   $ fab -U root -H my-server.xyz bootstrap
+
+   $ # You should run "deploy" everytime you change the config as well
+   $ fab -U root -H my-server.xyz deploy:config_path=/path/to/your/config.py
+
+   $ # To manage the bot you can use the "start/stop/restart" commands:
+   $ fab -U root -H my-server.xyz start
+
+Take a look and modify the fabfile if your remote machine doesn't play well.

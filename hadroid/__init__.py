@@ -11,7 +11,7 @@ def load_config_from_module(mod):
 def load_config_from_env():
     """Loads the extra configuration from environment."""
     cfg_path = os.environ.get('HADROID_CONFIG')
-    if cfg_path is not None:
+    if cfg_path is not None and os.path.isfile(cfg_path):
         spec = importlib.util.spec_from_file_location(".", cfg_path)
         cfg_m = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(cfg_m)
@@ -40,6 +40,7 @@ class Config(object):
 
 
 C = Config()
+
 __version__ = '0.1.0'
 
 __all__ = ('C', '__version__', )

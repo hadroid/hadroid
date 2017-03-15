@@ -19,6 +19,12 @@ setup(
     author='Krzysztof Nowak',
     author_email='kn@linux.com',
     license='GPLv3',
+    entry_points={
+        'console_scripts': [
+            'hadroid-bot = hadroid.bot:main',
+            'hadroid-botctl = hadroid.botctl:main',
+        ],
+    },
     classifiers=[
         'Development Status :: 3 - Alpha',
         'Intended Audience :: Developers',
