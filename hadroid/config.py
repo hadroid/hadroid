@@ -1,30 +1,15 @@
-"""Default Hadroid configuration."""
-
-from collections import namedtuple
+"""Example Hadroid configuration."""
 
 from hadroid.modules.base import echo, ping, selfdestruct
 from hadroid.modules.coffee import COFFEE_USAGE, coffee
 from hadroid.modules.cron import CRON_USAGE, cron
 from hadroid.modules.menu import MENU_USAGE, menu
+from hadroid.client import StreamClient, CronClient
+from hadroid import Module
+from hadroid import build_usage_str
 
-Module = namedtuple('Module', ['names', 'main', 'usage'])
+GITTER_PERSONAL_ACCESS_TOKEN = 'YOUR_GITTER_PERSONAL_ACCESS_TOKEN'
 
-
-def build_usage_str(modules, botname):
-    """Build the bot usage string from the list of modules.
-
-    :type botname: str
-    :type modules: (Module)
-    :param modules: iterable of Module objects
-    """
-    return"\n".join(("    @{0} {1}".format(botname,
-                                           m.usage or m.names[0])
-                     for m in modules))
-
-
-#
-# Default Configuration
-#
 MODULES = (
     Module(('--help', ), None, None),
     Module(('coffee', 'c'), coffee, COFFEE_USAGE),
@@ -35,7 +20,10 @@ MODULES = (
     Module(('selfdestruct', ), selfdestruct, None),
 )
 
-GITTER_PERSONAL_ACCESS_TOKEN = 'YOUR_GITTER_PERSONAL_ACCESS_TOKEN'
+CLIENTS = {
+    'stream': StreamClient,
+    'cron': CronClient,
+}
 
 DEBUG = False
 
@@ -83,3 +71,18 @@ DOC_OPTIONS = """
     --version     Show version.
     --yall        Use the southern charm.
 """[1:-1]
+
+
+DOC = """
+{header}
+
+Usage:
+{usage}
+
+Examples:
+{examples}
+
+Options:
+{options}
+""".format(header=DOC_HEADER, usage=DOC_USAGE, examples=DOC_EXAMPLES,
+           options=DOC_OPTIONS)
