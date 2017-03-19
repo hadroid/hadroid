@@ -1,8 +1,9 @@
 """Hadroid setup."""
 
-from setuptools import setup, find_packages
 from codecs import open
 from os import path
+
+from setuptools import find_packages, setup
 
 here = path.abspath(path.dirname(__file__))
 
@@ -18,6 +19,12 @@ setup(
     author='Krzysztof Nowak',
     author_email='kn@linux.com',
     license='GPLv3',
+    entry_points={
+        'console_scripts': [
+            'hadroid-bot = hadroid.bot:main',
+            'hadroid-botctl = hadroid.botctl:main',
+        ],
+    },
     classifiers=[
         'Development Status :: 3 - Alpha',
         'Intended Audience :: Developers',
@@ -31,9 +38,10 @@ setup(
     keywords='bot gitter chat',
     packages=find_packages(exclude=['docs', 'tests']),
     install_requires=[
-        'requests>=2.11.1',
-        'docopt>=0.6.2',
         'crontab>=0.21.3',
+        'docopt>=0.6.2',
+        'pytz>=2016.10',
+        'requests>=2.11.1',
     ],
     extras_require={
         'dev': [

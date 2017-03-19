@@ -2,10 +2,10 @@
 
 from collections import namedtuple
 
-from hadroid.modules.coffee import coffee, COFFEE_USAGE
-from hadroid.modules.menu import menu, MENU_USAGE
 from hadroid.modules.base import echo, ping, selfdestruct
-from hadroid.modules.cron import cron, CRON_USAGE
+from hadroid.modules.coffee import COFFEE_USAGE, coffee
+from hadroid.modules.cron import CRON_USAGE, cron
+from hadroid.modules.menu import MENU_USAGE, menu
 
 Module = namedtuple('Module', ['names', 'main', 'usage'])
 
@@ -40,6 +40,9 @@ GITTER_PERSONAL_ACCESS_TOKEN = 'YOUR_GITTER_PERSONAL_ACCESS_TOKEN'
 DEBUG = False
 
 BOT_NAME = 'Hadroid'
+
+# Set the default Gitter room for the bot to join
+ROOM = ''
 
 # Respond to !<command> or @Hadroid <command>
 CMD_PREFIX = ('!', '@' + BOT_NAME)

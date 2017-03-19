@@ -4,8 +4,9 @@ Hadroid Controller.
 This is the controller for the bot, that sets up all of the plumbing for
 authenticating to Gitter, listening on channel stream or executing commands.
 
-Argument <room> can be either an organization or repo name room name, e.g.:
-'myorg', 'myorg/myrepo', or a Gitter username for a One-To-One conversation.
+Option --room=<room> can be either an organization or repo name room name,
+e.g.: 'myorg', 'myorg/myrepo', or a Gitter username for a One-To-One
+conversation. If skipped the 'ROOM' config variable is used.
 
 Controller has multiple modes of operation:
 'gitter' executes a single bot command and broadcast it to the gitter channel
@@ -13,9 +14,9 @@ Controller has multiple modes of operation:
 'cron' launches the periodic task loop.
 
 Usage:
-    botctl stream <room> [--verbose]
-    botctl cron <room> [--verbose]
-    botctl gitter <room> <cmd>...
+    botctl stream [--room=<room>] [--verbose]
+    botctl cron [--room=<room>] [--verbose]
+    botctl gitter <cmd>... [--room=<room>]
     botctl stdout <cmd>...
 
 Examples:
@@ -25,25 +26,28 @@ Examples:
     botctl gitter qa "echo Hello everyone!"
 
 Options:
-    -h --help   Show this help.
-    --verbose   Show errors.
-    --version   Show version.
+    -h --help       Show this help.
+    --room=<room>   Room where the bot will run.
+    --verbose       Show errors.
+    --version       Show version.
 """
 
 
-import requests
 import json
 import shlex
-import docopt
+from collections import namedtuple
 from datetime import datetime
 from time import sleep
-import pytz
-from collections import namedtuple
 
-from hadroid.docopt2 import docopt_parse
-from hadroid import __version__, C
+import docopt
+import pytz
+import requests
+
+from hadroid import C, __version__
+from hadroid.bot import __doc__ as bot_doc
+from hadroid.bot import bot_main
 from hadroid.client import Client, StdoutClient
-from hadroid.bot import __doc__ as bot_doc, bot_main
+from hadroid.docopt2 import docopt_parse
 from hadroid.modules.cron import CronBook
 
 
@@ -168,11 +172,16 @@ class CronClient(GitterClient):
             self.send("```text\n{0}```".format(str(e)))
 
 
-if __name__ == '__main__':
+def main():
+    """Main function."""
     args = docopt.docopt(__doc__, version=__version__)
 
+    if args['stdout']:
+        bot_args = docopt_parse(bot_doc, args['<cmd>'], version=__version__)
+        bot_main(StdoutClient(), bot_args)
+
     room_id = GitterClient(C.GITTER_PERSONAL_ACCESS_TOKEN).resolve_room_id(
-        args['<room>'])
+        args.get('--room', C.ROOM))
 
     if args['stream']:
         client = StreamClient(C.GITTER_PERSONAL_ACCESS_TOKEN, room_id)
@@ -184,6 +193,7 @@ if __name__ == '__main__':
         client = GitterClient(C.GITTER_PERSONAL_ACCESS_TOKEN, room_id)
         bot_args = docopt_parse(bot_doc, args['<cmd>'], version=__version__)
         bot_main(client, bot_args)
-    elif args['stdout']:
-        bot_args = docopt_parse(bot_doc, args['<cmd>'], version=__version__)
-        bot_main(StdoutClient(), bot_args)
+
+
+if __name__ == '__main__':
+    main()

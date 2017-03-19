@@ -3,7 +3,6 @@
 import json
 import os
 
-
 COFFEE_USAGE = '(coffee | c) [(drink [<n>] | pay [<n>] | balance | stats)]'
 
 

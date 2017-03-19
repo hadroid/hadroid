@@ -12,7 +12,7 @@ Options:
 """
 
 
-from hadroid import __version__, C
+from hadroid import C, __version__
 
 # Patch the docstring
 __doc__ = __doc__.format(header=C.DOC_HEADER,
@@ -28,9 +28,13 @@ def bot_main(client, args, msg_json=None):
             m.main(client, args, msg_json)
 
 
-if __name__ == "__main__":
+def main():
     """When executed directly, use a console client."""
     from docopt import docopt
     from hadroid.client import StdoutClient
     args = docopt(__doc__, version=__version__)
     bot_main(StdoutClient(), args)
+
+
+if __name__ == '__main__':
+    main()

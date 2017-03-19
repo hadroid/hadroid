@@ -1,7 +1,8 @@
 """CERN Restaurants menu fetching module."""
 
-import requests
 import re
+
+import requests
 
 MENU_USAGE = '(menu | m) [<day>] [--yall]'
 
