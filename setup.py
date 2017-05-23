@@ -13,7 +13,7 @@ with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
 with open(path.join(here, 'hadroid', '__init__.py'), encoding='utf-8') as f:
     for line in f.readlines():
         if line.startswith('__version__'):
-            version = line.split(' = ')[1]
+            version = line.split('=')[1].strip()[1:-1]
 
 setup(
     name='hadroid',
