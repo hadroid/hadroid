@@ -1,0 +1,17 @@
+sudo: false
+language: python
+python:
+- '3.5'
+- '3.6'
+install:
+- travis_retry pip install .
+deploy:
+  provider: pypi
+  user: knowak
+  password:
+    secure: C6D2rOPQOR7SWGyHnMvxWT8C0OOYaYmZWMZj18EIoLp/3kryEFPdl+rXSFgGNi4uypd4ey2e1LON65Ldxo0qIsf22TuIjNkEU7s0yhTOP/EiQMLq9Tt/Lqs0UZhZ6bRkn0X9zm+VyCd+YuDJ4v9UsSQC3ogqiAAFwAvONBMbItsZ0kj0LB+MXLfyJR7a/CriBV78AqKkQlHYDvggsO+zBY3wgbUgCkWkQ/2gvpD7VWYvjHhaF9hTdLgCygv1nVpAzhQzSNGbet6Qq3jSibxFwhfpvIzIe4+m0NsVNV9mtCAkpSozxbcd9sZajF2+j+wcZc2lQmJFboppNNdo8QlLLZTtU9hJW/6FQWj/ymfBaunsSKTOzQkQWeXmGatFmi8lcODcaDDZE8ErHYvZl9MW6sQC3AO580uLBW5QDtNfKRhky1fmpF+at1YOa7yTvg7ks9s4pmOgn+y2TbLpUwnXVMAssygVnADeD3giFYpYVWRONN2hdcMA+r+t+amJvYc13vypBJYvFxKDWQ+F2q/+VDkONrYAlezE5TRr9aduyEXitlwbg3llZATUF5pJIhi/8lpyUWe0L58DsbD792MpOU9eix+K2jWDlTdmZPc51GPd4CXP2X5HJjVKl67zLakEzkHWidvAG+yKYtq3PuwM0k1TBcVUkkrR7XITXeKG0Oo=
+  distributions: sdist bdist_wheel
+  on:
+    tags: true
+    python: '3.5'
+    repo: krzysztof/hadroid
