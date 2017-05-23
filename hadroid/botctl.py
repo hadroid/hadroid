@@ -18,19 +18,20 @@ and finally kill some clients:
 
 Usage:
     botctl run
-    botctl start <client> <room>
+    botctl shutdown
+    botctl start <client-name> <room>
     botctl stop <client-id>
     botctl list
 
 Examples:
     botctl run
     botctl start stream krzysztof
-    botctl start cron zenodo
     botctl start stream zenodo
+    botctl start cron zenodo
     botctl start stream zenodo/zenodo
 
 Options:
-    <client>        Can be either "stream" for GitterStream client or "cron"
+    <client-name>   Can be either "stream" for GitterStream client or "cron"
                     for cron job runner.
     <room>          Either Gitter room name or Gitter username.
     <client-id>     ID of the client that is to be shut-down.
@@ -40,6 +41,9 @@ Options:
 import os
 import socket
 import pickle
+import json
+import signal
+import sys
 from docopt import docopt
 
 from multiprocessing import Process
@@ -51,42 +55,74 @@ def client_function(client):
     client.listen()
 
 
-def manage_clients(client_processes, args):
+def start_client(clients, client_name, room):
+    client_class = C.CLIENTS[client_name]
+    client_id = max(clients.keys()) + 1 if clients else 0
+    args = (C.GITTER_PERSONAL_ACCESS_TOKEN, )
+    client = client_class(*args)
+    room_id = client.resolve_room_id(room)
+    process_name = "{0} {1}".format(client_class.__name__, room)
+    client.room_id = room_id
+    p = Process(target=client_function, args=(client, ), name=process_name)
+    clients[client_id] = dict(process=p,
+                              room=room,
+                              client_name=client_name)
+    p.start()
+    return client_id
+
+
+def stop_client(clients, client_id):
+    if client_id not in clients:
+        print("Client {0} not found.".format(client_id))
+    p = clients[client_id]['process']
+    p.terminate()
+    del clients[client_id]
+
+
+def save_clients(clients):
+    print("Serializing processes.")
+    serialized = [(id_, cl['client_name'], cl['room'])
+                  for id_, cl in clients.items()]
+    print("Saving.")
+    with open('hadroid_clients.json', 'w') as fp:
+        json.dump(serialized, fp, indent=2)
+
+
+def manage_clients(clients, args):
     """Manage the bot clients."""
     if args['start']:
         room = args['<room>']
-        client_name = args['<client>']
-
-        client_class = C.CLIENTS[client_name]
-        client_id = max(client_processes.keys()) + 1 if client_processes else 0
-        args = (C.GITTER_PERSONAL_ACCESS_TOKEN, )
-        client = client_class(*args)
-        room_id = client.resolve_room_id(room)
-        process_name = "{0} {1}".format(client_class.__name__, room)
-        client.room_id = room_id
-        p = Process(target=client_function, args=(client, ), name=process_name)
-        client_processes[client_id] = p
-        p.start()
+        client_name = args['<client-name>']
+        client_id = start_client(clients, client_name, room)
+        save_clients(clients)
         return "Created {0}".format(client_id)
 
     if args['stop']:
+        # Stop a client
         client_id = int(args['<client-id>'])
-
-        if client_id not in client_processes:
-            print("Client {0} not found.".format(client_id))
-        p = client_processes[client_id]
-        p.terminate()
-        del client_processes[client_id]
+        stop_client(clients, client_id)
+        save_clients(clients)
         return "Stopped {0}".format(client_id)
 
     if args['list']:
-        return "\n".join(["{0} {1}".format(uuid, process.name)
-                          for uuid, process in client_processes.items()])
+        return "\n".join(["{0} {1}".format(id_, cl['process'].name)
+                          for id_, cl in clients.items()])
+    if args['shutdown']:
+        # Save all processes and shut down
+        save_clients(clients)
+        print("Terminating clients.")
+        for client_id in list(clients.keys()):
+            stop_client(clients, client_id)
+        print("Shutting down.")
+        sys.exit(0)
+    if args['save']:
+        save_clients(clients)
 
 
 def server():
     """Run the client manager."""
-    client_processes = {}
+
+    clients = {}
     socket_path = '/tmp/hadroid_socket'
     print("Unlinking socket.")
     try:
@@ -94,6 +130,14 @@ def server():
     except OSError:
         if os.path.exists(socket_path):
             raise
+
+    if os.path.isfile('hadroid_clients.json'):
+        with open('hadroid_clients.json', 'r') as fp:
+            loaded_clients = json.load(fp)
+        for id_, client_name, room in loaded_clients:
+            start_client(clients, client_name, room)
+        print("Loaded {} clients.".format(len(loaded_clients)))
+
     print("Creating socket.")
     with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as s:
         print("Binding.")
@@ -106,7 +150,7 @@ def server():
                 print('Received message.')
                 data = conn.recv(1024)
                 args = pickle.loads(data)
-                ret = manage_clients(client_processes, args)
+                ret = manage_clients(clients, args)
                 b_ret = pickle.dumps(ret)
                 conn.sendall(b_ret)
 
@@ -123,9 +167,12 @@ def main():
             s.connect(socket_path)
             b_msg = pickle.dumps(args)
             s.sendall(b_msg)
-            b_data = s.recv(1024)
-            data = pickle.loads(b_data)
-            print(data)
+            if not args['shutdown']:
+                b_data = s.recv(1024)
+                data = pickle.loads(b_data)
+                print(data)
+            else:
+                print("Sent the shutdown signal.")
 
 
 if __name__ == '__main__':
