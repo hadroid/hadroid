@@ -1,10 +1,12 @@
 sudo: false
 language: python
 python:
-- '3.5'
-- '3.6'
+  - "3.5"
+  - "3.6"
 install:
-- travis_retry pip install .
+- "travis_retry pip install -e ."
+script:
+  - "py.test tests"
 deploy:
   provider: pypi
   user: knowak
