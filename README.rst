@@ -4,13 +4,11 @@
 
 Installation
 ============
-Hadroid is not on PyPI but it's easy to install from sources:
+Hadroid is on PyPI:
 
 .. code-block:: console
 
-   $ git clone https://github.com/krzysztof/hadroid.git
-   $ cd hadroid
-   $ pip install -e .
+   $ pip install hadroid
 
 Configuration
 =============
@@ -31,25 +29,9 @@ Point to your config with environmental variable:
 
 Usage
 =====
-There are two main bot files: ``bot.py`` and ``botctl.py``. The ``bot.py`` is
-only useful when running the bot program locally as a single-command execution.
-The ``botctl.py`` allows for launching ongoing bot "daemons" that can listen
-on the Gitter channels for incoming commands or execute periodic commands.
-
-Test the bot locally
-~~~~~~~~~~~~~~~~~~~~
-Either call the bot directly:
-
-.. code-block:: console
-
-   $ python hadroid/bot.py --help
-   $ python hadroid/bot.py ping
-
-or through the controller with ``stdout`` client:
-
-.. code-block:: console
-
-   $ python hadroid/botctl.py stdout ping
+The bot is run using the ``hadroid`` command,
+which allows for launching bot threads that can listen
+on the Gitter channels for incoming commands or execute periodic tasks.
 
 Run the bot on Gitter
 ~~~~~~~~~~~~~~~~~~~~
@@ -58,20 +40,24 @@ This can be either an orgazation channel, repository or a private one-on-one
 chat with a user. The bot needs to be already in the room, or at least one
 private message needs to be send to the bot.
 
-Run the bot on some of the room he's already in, or chat with him privately:
+First, run the main bot "server" application:
 
 .. code-block:: console
 
-   $ python hadroid/botctl.py stream 'myorg/myroom' --verbose
-   $ python hadroid/botctl.py stream 'myorg/somerepo' --verbose
-   $ python hadroid/botctl.py stream 'myusername' --verbose
+   $ hadroid run
+
+Keep this session alive an in another session have the bot join some channels:
+
+.. code-block:: console
+
+   $ hadroid --help
 
 For CRON commands, run a CRON daemon in a separate shell:
 
 .. code-block:: console
 
-   $ python hadroid/botctl.py cron mytestroom --verbose
-
+   $ hadroid start stream <your_github_username>
+   $ hadroid start cron <your_github_username>
 
 Deployment
 ==========
