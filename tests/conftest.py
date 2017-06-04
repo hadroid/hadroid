@@ -9,6 +9,15 @@ def datadir():
     return os.path.join(os.path.dirname(__file__), 'data')
 
 
+@pytest.yield_fixture
+def env_testconfig(datadir):
+    orig = os.environ.get('HADROID_CONFIG')
+    os.environ['HADROID_CONFIG'] = os.path.join(datadir, 'testconfig.py')
+    yield
+    if orig:
+        os.environ['HADROID_CONFIG'] = orig
+
+
 @pytest.fixture
 def menus(datadir):
     with open(os.path.join(datadir, 'menus.json'), 'r') as fp:
