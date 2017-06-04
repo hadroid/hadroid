@@ -42,7 +42,7 @@ ADMINS = ('krzysztof', )
 DOC_HEADER = """
 Hadroid Help Manual.
 
-Parameter <day> can be either 'today', 'tomorrow' or 'moday'-'friday'.
+Parameter <day> can be either 'today', 'tomorrow' or 'monday'-'friday'.
 For coffee module <n> stands for number of coffees drank or paid for.
 If <n> is not specified, it stands for buying or paying for one coffee.
 Instead direct message you can also preceed the commands with a bang '!',
