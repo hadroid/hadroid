@@ -10,6 +10,9 @@ from hadroid import build_usage_str
 
 GITTER_PERSONAL_ACCESS_TOKEN = 'YOUR_GITTER_PERSONAL_ACCESS_TOKEN'
 
+SOCKET_PATH = '/tmp/hadroid_socket'
+SOCKET_BUFSIZE = 16 * 1024
+
 MODULES = (
     Module(('--help', ), None, None),
     Module(('coffee', 'c'), coffee, COFFEE_USAGE),

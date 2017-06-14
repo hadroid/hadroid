@@ -42,7 +42,6 @@ import os
 import socket
 import pickle
 import json
-import signal
 import sys
 from docopt import docopt
 
@@ -56,6 +55,7 @@ def client_function(client):
 
 
 def start_client(clients, client_name, room):
+    """Start the client."""
     client_class = C.CLIENTS[client_name]
     client_id = max(clients.keys()) + 1 if clients else 0
     args = (C.GITTER_PERSONAL_ACCESS_TOKEN, )
@@ -72,6 +72,7 @@ def start_client(clients, client_name, room):
 
 
 def stop_client(clients, client_id):
+    """Stop the client."""
     if client_id not in clients:
         print("Client {0} not found.".format(client_id))
     p = clients[client_id]['process']
@@ -80,6 +81,7 @@ def stop_client(clients, client_id):
 
 
 def save_clients(clients):
+    """Serialize the clients."""
     print("Serializing processes.")
     serialized = [(id_, cl['client_name'], cl['room'])
                   for id_, cl in clients.items()]
@@ -95,18 +97,18 @@ def manage_clients(clients, args):
         client_name = args['<client-name>']
         client_id = start_client(clients, client_name, room)
         save_clients(clients)
-        return "Created {0}".format(client_id)
+        return client_id
 
     if args['stop']:
         # Stop a client
         client_id = int(args['<client-id>'])
         stop_client(clients, client_id)
         save_clients(clients)
-        return "Stopped {0}".format(client_id)
+        return client_id
 
     if args['list']:
-        return "\n".join(["{0} {1}".format(id_, cl['process'].name)
-                          for id_, cl in clients.items()])
+        return [(id_, cl['process'].name) for id_, cl in clients.items()]
+
     if args['shutdown']:
         # Save all processes and shut down
         save_clients(clients)
@@ -121,9 +123,8 @@ def manage_clients(clients, args):
 
 def server():
     """Run the client manager."""
-
     clients = {}
-    socket_path = '/tmp/hadroid_socket'
+    socket_path = C.SOCKET_PATH
     print("Unlinking socket.")
     try:
         os.unlink(socket_path)
@@ -148,11 +149,26 @@ def server():
             conn, addr = s.accept()
             with conn:
                 print('Received message.')
-                data = conn.recv(1024)
+                data = conn.recv(C.SOCKET_BUFSIZE)
                 args = pickle.loads(data)
                 ret = manage_clients(clients, args)
                 b_ret = pickle.dumps(ret)
                 conn.sendall(b_ret)
+
+
+def client(args):
+    """Execute a client command."""
+    socket_path = C.SOCKET_PATH
+    with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as s:
+        s.connect(socket_path)
+        b_msg = pickle.dumps(args)
+        s.sendall(b_msg)
+        if not args['shutdown']:
+            b_data = s.recv(C.SOCKET_BUFSIZE)
+            data = pickle.loads(b_data)
+            return data
+        else:
+            return "Sent the shutdown signal."
 
 
 def main():
@@ -162,17 +178,8 @@ def main():
     if args['run']:
         server()
     else:
-        socket_path = '/tmp/hadroid_socket'
-        with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as s:
-            s.connect(socket_path)
-            b_msg = pickle.dumps(args)
-            s.sendall(b_msg)
-            if not args['shutdown']:
-                b_data = s.recv(1024)
-                data = pickle.loads(b_data)
-                print(data)
-            else:
-                print("Sent the shutdown signal.")
+        ret = client(args)
+        print(ret)
 
 
 if __name__ == '__main__':

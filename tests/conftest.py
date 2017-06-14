@@ -19,6 +19,21 @@ def env_testconfig(datadir):
 
 
 @pytest.fixture
+def default_client_args():
+    d = {
+        'run': False,
+        'shutdown': False,
+        'start': False,
+        'stop': False,
+        'list': False,
+        '<client-name>': None,
+        '<room>': None,
+        '<client-id>': None,
+    }
+    return d
+
+
+@pytest.fixture
 def menus(datadir):
     with open(os.path.join(datadir, 'menus.json'), 'r') as fp:
         menus_data = json.load(fp)
