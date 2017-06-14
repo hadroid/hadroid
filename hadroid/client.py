@@ -135,8 +135,8 @@ class CronClient(GitterClient):
             events_backlog = [ev for ev in events_backlog if ev[1] >= now]
 
             if C.DEBUG:
-                print(exec_ev)
-                print(events_backlog)
+                print("To be executed:", exec_ev)
+                print("Backlog:", events_backlog)
 
             # Execute events from backlog
             for ev in exec_ev:
