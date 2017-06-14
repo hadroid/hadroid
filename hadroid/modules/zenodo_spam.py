@@ -51,7 +51,7 @@ def format_gist_text(res):
     d = defaultdict(lambda: [])
     for r in res:
         owner = r['owners'][0]
-        link = r['links']['self']
+        link = r['links']['html']
         title = r['metadata']['title']
         d[owner].append((link, title))
 
