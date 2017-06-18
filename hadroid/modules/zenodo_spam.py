@@ -84,12 +84,18 @@ def load_model(model_path):
 
 
 def format_communities_gist_text(res):
-    text = "Found {0} spam communities.\n".format(len(res))
+    d = defaultdict(lambda: [])
     for r in res:
-        link = r['links']['html']
+        owner = r['id_user']
+        url = r['links']['html']
         title = r['title']
-        text += "- {0} {1}\n".format(link, title)
+        d[owner].append((url, title))
 
+    text = "Found {0} spam communities.\n".format(len(res))
+    for user, comms in d.items():
+        text += "- https://zenodo.org/spam/{0}/delete\n".format(user)
+        for url, title in comms:
+            text += '  - {0} "{1}"\n'.format(url, title)
     return text
 
 
@@ -97,15 +103,15 @@ def format_records_gist_text(res):
     d = defaultdict(lambda: [])
     for r in res:
         owner = r['owners'][0]
-        link = r['links']['html']
+        url = r['links']['html']
         title = r['metadata']['title']
-        d[owner].append((link, title))
+        d[owner].append((url, title))
 
     text = "Found {0} spam records.\n".format(len(res))
     for user, rec_links in d.items():
-        text += "- User: {0}\n".format(user)
+        text += "- https://zenodo.org/spam/{0}/delete\n".format(user)
         for url, title in rec_links:
-            text += '  - {0} ("{1}..")\n'.format(url, title[:25])
+            text += '  - {0} ("{1}")\n'.format(url, title)
     return text
 
 
