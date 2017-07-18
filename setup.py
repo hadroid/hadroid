@@ -49,6 +49,8 @@ setup(
         'scikit-learn==0.18.1',
         'numpy==1.13.0',
         'scipy==0.19.0',
+        'fuzzywuzzy==0.15.0',
+        'uservoice==0.0.23',
         'python-dateutil==2.6.0',
     ],
     extras_require={
