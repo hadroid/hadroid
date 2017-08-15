@@ -6,17 +6,16 @@ Config:
     USERVOICE_API_KEY = 'CHANGEME'
     USERVOICE_API_SECRET = 'CHANGEME'
 
-    USERVOICE_ADMINS = {
-        'slint': 'Alex',
-        'krzysztof': 'Krzysztof',
-    }
+    USERVOICE_ADMINS = [
+        ('slint', 'Alex', ('alex',)),
+        ('krzysztof', 'Krzysztof' ('kn', )),
+    ]
 """
 from collections import Counter, defaultdict
 from datetime import datetime
 from operator import itemgetter
 from urllib.parse import urlencode
 
-import fuzzywuzzy.process as fuzzy_match
 from uservoice import Client
 
 from hadroid import C
@@ -25,7 +24,6 @@ USERVOICE_USAGE = '(uservoice | u) stats'
 
 
 class UservoiceClient:
-
     def __init__(self, subdomain=None, key=None, secret=None):
         self._client = Client(
             subdomain or C.USERVOICE_SUBDOMAIN_NAME,
@@ -46,18 +44,29 @@ class UservoiceClient:
             tickets = client.get('/api/v1/tickets.json?{}'.format(querystring))
             return tickets.get('tickets', [])
 
+    def _match_asignee(self, note_body):
+        for admin_gh, name, aliases in C.USERVOICE_ADMINS:
+            names = (admin_gh, ) + aliases
+            if any('@{0}'.format(name) in note_body for name in names):
+                return admin_gh
+
     def extract_assigned_tickets(self, tickets):
         """Get tickets assigned to admins through Notes (eg. 'FOR JEFF')."""
         stats = defaultdict(list)
         tickets_with_notes = sorted([t for t in tickets if t.get('notes')],
                                     key=itemgetter('last_message_at'))
+        assigned_ticket_ids = []
         for ticket in tickets_with_notes:
-            notes_text = ' '.join((note.get('body', '')
-                                   for note in ticket.get('notes', [])))
-            search_terms = {k: (k, v) for k, v in C.USERVOICE_ADMINS.items()}
-            match = fuzzy_match.extractOne(notes_text, search_terms)
-            if match:
-                stats[match[2]].append(ticket)
+            notes = sorted([n for n in ticket.get('notes')],
+                           key=itemgetter('created_at'), reverse=True)
+            admin_gh = next((r for r in
+                             (self._match_asignee(n.get('body'))
+                              for n in notes) if r), None)
+            if admin_gh:
+                stats[admin_gh].append(ticket)
+                assigned_ticket_ids.append(ticket['id'])
+        unassigned = [t for t in tickets if t['id'] not in assigned_ticket_ids]
+        stats['/all'] = unassigned
         return stats
 
     def extract_ticket_stats(self, tickets):
@@ -70,9 +79,10 @@ class UservoiceClient:
 
         weekly_counts = Counter(map(week_offset, tickets))
         return (
-            ('w', weekly_counts.get(0, 0)),
-            ('m', sum(n for w, n in weekly_counts.items() if 1 <= w <= 3)),
-            ('>m', sum(n for w, n in weekly_counts.items() if w > 3)),
+            ('This week', weekly_counts.get(0, 0)),
+            ('Week+ old', sum(n for w, n in weekly_counts.items()
+                              if 1 <= w <= 3)),
+            ('Month+ old', sum(n for w, n in weekly_counts.items() if w > 3)),
         )
 
     def generate_support_report(self):
@@ -96,9 +106,10 @@ def support_report_to_markdown(report):
         '### {} Tickets ({})'.format(len(report.get('tickets', [])), age_str))
 
     # Format assignment stats
+    gh2name = dict((gh, name) for gh, name, _ in C.USERVOICE_ADMINS)
     for gh_user, tickets in report.get('assignments', {}).items():
-        content.append('\n**{} (@{})**\n'.format(
-                       C.USERVOICE_ADMINS[gh_user], gh_user))
+        content.append('\n**{} (@{}) - {} ticket(s):**\n'.format(
+                       gh2name[gh_user], gh_user, len(tickets)))
         for ticket in tickets:
             content.append(
                 '- [{subject} ({contact[name]})]({url}) - {last_message_at}'
