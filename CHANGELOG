@@ -1,3 +1,6 @@
+v0.1.6
+ - Addition of Uservoice module.
+ - Addition of Zenodo SPAM module.
 v0.1.0
  - Refactoring of modules and classes.
  - PyPI Setup

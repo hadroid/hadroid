@@ -18,9 +18,9 @@ with open(path.join(here, 'hadroid', '__init__.py'), encoding='utf-8') as f:
 setup(
     name='hadroid',
     version=version,
-    description='A simple Python chatbot',
+    description='A simple Gitter chatbot.',
     long_description=long_description,
-    url='https://github.com/krzysztof/hadroid',
+    url='https://github.com/hadroid/hadroid',
     author='Krzysztof Nowak',
     author_email='kn@linux.com',
     license='GPLv3',
