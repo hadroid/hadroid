@@ -9,7 +9,7 @@ from collections import defaultdict
 from sklearn.externals import joblib
 from hadroid import C
 
-SPAM_USAGE = ('(spam | s) (records|communities) [--from=<from-date>] '
+SPAM_USAGE = ('(spam | s) (records|communities|full) [--from=<from-date>] '
               '[--until=<until-date>] [--hours=<hours>] [--days=<days>]'
               '[--silent]')
 
@@ -115,6 +115,36 @@ def format_records_gist_text(res):
     return text
 
 
+def format_all_gist_text(records, communities):
+    d = defaultdict(lambda: {})
+    for r in records:
+        owner = r['owners'][0]
+        url = r['links']['html']
+        title = r['metadata']['title']
+        d[owner].setdefault('records', []).append((url, title))
+
+    for r in communities:
+        owner = r['id_user']
+        url = r['links']['html']
+        title = r['title']
+        d[owner].setdefault('communities', []).append((url, title))
+
+    text = "Found {0} spammers.\n".format(len(d))
+    for user, val in d.items():
+        text += "- https://zenodo.org/spam/{0}/delete\n".format(user)
+        records = val['records']
+        if records:
+            text += "  - **Records:**"
+        for url, title in records:
+            text += '    - {0} ("{1}")\n'.format(url, title)
+        communities = val['communities']
+        if communities:
+            text += "  - **Communities:**"
+        for url, title in communities:
+            text += '    - {0} ("{1}")\n'.format(url, title)
+    return text
+
+
 def send_summary_to_gist(contents, description):
     headers = {
         'Authorization': 'token {token}'.format(token=C.GITHUT_GIST_TOKEN),
@@ -173,7 +203,7 @@ def zenodo_spam(client, args, msg_json):
         contents = format_records_gist_text(spam)
         description = "Spam records FROM {0} TO {1}".format(
             str(from_date), str(until_date))
-    else:
+    elif args['communities']:
         hits = harvest_zenodo_communities(from_date, until_date)
         X = [prepare_community_features(rec) for rec in hits]
         model = load_model(C.ZENODO_COMMUNITIES_SPAM_MODEL_PATH)
@@ -182,6 +212,26 @@ def zenodo_spam(client, args, msg_json):
         contents = format_communities_gist_text(spam)
         description = "Spam communities FROM {0} TO {1}".format(
             str(from_date), str(until_date))
+    else:
+        # Records
+        hits = harvest_zenodo_communities(from_date, until_date)
+        X = [prepare_community_features(rec) for rec in hits]
+        model = load_model(C.ZENODO_COMMUNITIES_SPAM_MODEL_PATH)
+        y = model.predict(X)
+        records_spam = list(r for r, y in zip(hits, y) if y)
+
+        # Communites
+        if not args['--until']:
+            until_date = until_date + timedelta(days=1)
+        hits = harvest_zenodo_records(from_date, until_date)
+        X = [prepare_record_features(rec) for rec in hits]
+        model = load_model(C.ZENODO_RECORDS_SPAM_MODEL_PATH)
+        y = model.predict(X)
+        communities_spam = list(r for r, y in zip(hits, y) if y)
+        contents = format_all_gist_text(records_spam, communities_spam)
+        description = "Spammers FROM {0} TO {1}".format(
+            str(from_date), str(until_date))
+        spam = records_spam + communities_spam
 
     if spam:
         resp = send_summary_to_gist(contents, description)
