@@ -35,6 +35,7 @@ class UservoiceClient:
         return datetime.strptime(datestr[:10], '%Y/%m/%d')
 
     def fetch_tickets(self, state='open', count=100):
+        """Fetch the ticket list from Uservoice."""
         with self._client.login_as_owner() as client:
             querystring = urlencode({
                 'sort': 'newest',
@@ -44,14 +45,20 @@ class UservoiceClient:
             tickets = client.get('/api/v1/tickets.json?{}'.format(querystring))
             return tickets.get('tickets', [])
 
-    def _match_asignee(self, note_body):
+    def _match_assignee(self, note_body):
         for admin_gh, name, aliases in C.USERVOICE_ADMINS:
             names = (admin_gh, ) + aliases
-            if any('@{0}'.format(name) in note_body for name in names):
-                return admin_gh
+            matched_name = next((name for name in names if '@{0}'.format(name)
+                                 in note_body), None)
+            if matched_name:
+                a_idx = note_body.index(matched_name)
+                msg = note_body[a_idx + len(matched_name):]
+                b_idx = msg.find('\n') if '\n' in msg else -1
+                msg = msg[:b_idx]
+                return msg, admin_gh
 
     def extract_assigned_tickets(self, tickets):
-        """Get tickets assigned to admins through Notes (eg. 'FOR JEFF')."""
+        """Get tickets assigned to admins through notes (eg. '@kn')."""
         stats = defaultdict(list)
         tickets_with_notes = sorted([t for t in tickets if t.get('notes')],
                                     key=itemgetter('last_message_at'))
@@ -59,10 +66,12 @@ class UservoiceClient:
         for ticket in tickets_with_notes:
             notes = sorted([n for n in ticket.get('notes')],
                            key=itemgetter('created_at'), reverse=True)
-            admin_gh = next((r for r in
-                             (self._match_asignee(n.get('body'))
-                              for n in notes) if r), None)
-            if admin_gh:
+            assign_info = next((r for r in
+                                (self._match_assignee(n.get('body'))
+                                 for n in notes) if r), None)
+            if assign_info:
+                msg, admin_gh = assign_info
+                ticket['admin_msg'] = msg
                 stats[admin_gh].append(ticket)
                 assigned_ticket_ids.append(ticket['id'])
         unassigned = [t for t in tickets if t['id'] not in assigned_ticket_ids]
@@ -111,9 +120,11 @@ def support_report_to_markdown(report):
         content.append('\n**{} (@{}) - {} ticket(s):**\n'.format(
                        gh2name[gh_user], gh_user, len(tickets)))
         for ticket in tickets:
-            content.append(
-                '- [{subject} ({contact[name]})]({url}) - {last_message_at}'
-                .format(**ticket))
+            msg = ('- [{subject} ({contact[name]})]({url}) - {last_message_at}'
+                   .format(**ticket))
+            if 'admin_msg' in ticket:
+                msg += '\n   -{0}'.format(ticket['admin_msg'])
+            content.append(msg)
 
     return '\n'.join(content)
 
