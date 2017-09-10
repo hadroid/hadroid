@@ -143,7 +143,7 @@ def server():
     with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as s:
         print("Binding.")
         s.bind(socket_path)
-        print("Listending for messages.")
+        print("Listening for messages.")
         while True:
             s.listen(1)
             conn, addr = s.accept()

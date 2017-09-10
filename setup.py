@@ -43,6 +43,7 @@ setup(
     packages=find_packages(exclude=['docs', 'tests']),
     install_requires=[
         'crontab==0.21.3',
+        'cached-property==1.3.0',
         'docopt==0.6.2',
         'pytz==2016.10',
         'requests==2.11.1',

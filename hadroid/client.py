@@ -68,7 +68,9 @@ class GitterClient(Client):
             room_id=(room_id or self.room_id))
         msg_fmt = '```text\n{msg}\n```' if block else '{msg}'
         data = json.dumps({'text': msg_fmt.format(msg=msg)})
-        requests.post(url, data=data, headers=self.headers)
+        resp = requests.post(url, data=data, headers=self.headers)
+        if resp.status_code != 200:
+            raise Exception(resp.status_code, resp.text)
 
 
 class StreamClient(GitterClient):
