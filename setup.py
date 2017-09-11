@@ -58,7 +58,8 @@ setup(
             'check-manifest'
         ],
         'test': [
-            'pytest==3.1.0'
+            'pytest==3.1.0',
+            'pytest-mock==1.6.2'
         ],
     },
 )

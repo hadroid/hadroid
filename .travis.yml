@@ -4,7 +4,7 @@ python:
 - '3.5'
 - '3.6'
 install:
-- travis_retry pip install -e .
+- travis_retry pip install -e .[test]
 script:
 - py.test tests
 deploy:

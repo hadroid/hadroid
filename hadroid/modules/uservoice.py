@@ -23,7 +23,7 @@ from uservoice import Client
 
 from hadroid import C
 
-USERVOICE_USAGE = '(uservoice | u) stats'
+USERVOICE_USAGE = '(uservoice | u)'
 
 
 class Ticket(object):
@@ -204,9 +204,16 @@ def summary_to_markdown(tickets, summary):
         for tid_msg in assigned_tickets:
             tid, msg = tid_msg
             ticket = tl.get_ticket_by_id(tid)
+            t = Ticket(ticket)
             line = (
-                '- [{subject} ({contact[name]})]({url}) - {last_message_at}'
-                .format(**ticket))
+                '- [{subject} ({contactname})]({url}) - {last_msg_at}'
+                .format(
+                    subject=ticket['subject'],
+                    contactname=ticket['contact']['name'],
+                    url=ticket['url'],
+                    last_msg_at=str(t.last_message_at.strftime('%d %B %Y'))
+                    )
+            )
             if msg:
                 line += '\n   - {0}'.format(msg)
             content.append(line)
@@ -216,8 +223,16 @@ def summary_to_markdown(tickets, summary):
             len(unassigned)))
     for tid in unassigned:
         ticket = tl.get_ticket_by_id(tid)
-        line = ('- [{subject} ({contact[name]})]({url}) - {last_message_at}'
-                .format(**ticket))
+        t = Ticket(ticket)
+        line = (
+            '- [{subject} ({contactname})]({url}) - {last_msg_at}'
+            .format(
+                subject=ticket['subject'],
+                contactname=ticket['contact']['name'],
+                url=ticket['url'],
+                last_msg_at=str(t.last_message_at.strftime('%d %B %Y'))
+                )
+        )
         content.append(line)
 
     return '\n'.join(content) + '\n'

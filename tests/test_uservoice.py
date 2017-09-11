@@ -1,5 +1,7 @@
 """Test the hadroid."""
 
+from datetime import datetime
+
 from hadroid.modules.uservoice import Ticket, TicketList, \
     aggregate_assignments_by_user, generate_summary, summary_to_markdown
 
@@ -153,7 +155,7 @@ def test_aggregate_assignments():
     }
 
 
-def test_generate_summary_and_markdown():
+def test_generate_summary_and_markdown(mocker):
     """Test summary generation."""
     tickets = [
         {
@@ -231,6 +233,8 @@ def test_generate_summary_and_markdown():
         (('user1', 'u1'), "User one"),
         (('user2', 'u2'), "User two"),
     ]
+    dt_mock = mocker.patch('hadroid.modules.uservoice.datetime')
+    dt_mock.utcnow.return_value = datetime(2017, 9, 10, 0, 0, 0, 0)
     summary = generate_summary(tickets, usernames_config)
     assert summary == {
         "stats": [
@@ -258,19 +262,19 @@ def test_generate_summary_and_markdown():
         "### 5 Tickets (This week: 2 | Week+ old: 1 | Month+ old: 2)\n"
         "\n**@user1 - 1 ticket(s):**\n\n"
         "- [Subject one (Jane Smith)](https://foo.uservoice.com/admin/"
-        "tickets/1) - 2017/09/04 17:04:53 +0000\n"
+        "tickets/1) - 04 September 2017\n"
         "   - Foo\n"
         "\n**@user2 - 2 ticket(s):**\n\n"
         "- [Subject two (John Doe)](https://foo.uservoice.com/admin/tickets/2)"
-        " - 2017/09/03 17:04:53 +0000\n"
+        " - 03 September 2017\n"
         "   - Bar\n"
         "- [Subject three (Foo Smith)](https://foo.uservoice.com/admin/"
-        "tickets/3) - 2017/09/01 17:04:53 +0000\n"
+        "tickets/3) - 01 September 2017\n"
         "   - Bar\n"
         "\n**@\\all - 2 unassigned ticket(s):**\n\n"
         "- [Subject four (Jim Doe)](https://foo.uservoice.com/admin/tickets/4)"
-        " - 2017/08/04 17:04:53 +0000\n"
+        " - 04 August 2017\n"
         "- [Subject five (Bob Bob)](https://foo.uservoice.com/admin/tickets/5)"
-        " - 2017/05/04 17:04:53 +0000\n"
+        " - 04 May 2017\n"
     )
     assert markdown == out
