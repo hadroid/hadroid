@@ -259,15 +259,14 @@ def send_summary_to_gist(contents, description):
 
 
 def uservoice(client, args, msg_json):
-    if args['stats']:
-        tickets = fetch_tickets()
-        username_config = C.USERVOICE_ADMINS
-        summary = generate_summary(tickets, username_config)
-        message = summary_to_markdown(tickets, summary)
-        if len(message) < 4000:  # Approx. Gitter limit
-            client.send(message)
-        else:
-            resp = send_summary_to_gist(message, "Uservoice report.")
-            gist_url = resp.json()['html_url']
-            client.send("Uservoice report too long. Available at {0}".format(
-                gist_url))
+    tickets = fetch_tickets()
+    username_config = C.USERVOICE_ADMINS
+    summary = generate_summary(tickets, username_config)
+    message = summary_to_markdown(tickets, summary)
+    if len(message) < 4000:  # Approx. Gitter limit
+        client.send(message)
+    else:
+        resp = send_summary_to_gist(message, "Uservoice report.")
+        gist_url = resp.json()['html_url']
+        client.send("Uservoice report too long. Available at {0}".format(
+            gist_url))
