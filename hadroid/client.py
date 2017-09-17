@@ -4,6 +4,7 @@ from hadroid.modules.cron import CronBook
 import pytz
 import requests
 import json
+import logging
 from time import sleep
 
 import shlex
@@ -85,10 +86,10 @@ class StreamClient(GitterClient):
             if line and len(line) > 1:
                 try:
                     msg = line.decode('utf8')
-                    print(msg)
+                    logging.debug(msg)
                     self.parse_message(json.loads(msg))
                 except Exception as e:
-                    print(repr(e))
+                    logging.debug(repr(e))
 
     def parse_message(self, msg_json):
         """Parse a chat message for bot-mentions."""
@@ -137,8 +138,8 @@ class CronClient(GitterClient):
             events_backlog = [ev for ev in events_backlog if ev[1] >= now]
 
             if C.DEBUG:
-                print("To be executed:", exec_ev)
-                print("Backlog:", events_backlog)
+                logging.debug("To be executed: {}".format(exec_ev))
+                logging.debug("Backlog: {}".format(events_backlog))
 
             # Execute events from backlog
             for ev in exec_ev:

@@ -26,7 +26,7 @@ setup(
     license='GPLv3',
     entry_points={
         'console_scripts': [
-            'hadroid = hadroid.botctl:main',
+            'hadroid = hadroid.hadroid:main',
         ],
     },
     classifiers=[
@@ -39,7 +39,7 @@ setup(
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
     ],
-    keywords='bot gitter chat',
+    keywords='gitter chatbot',
     packages=find_packages(exclude=['docs', 'tests']),
     install_requires=[
         'crontab==0.21.3',

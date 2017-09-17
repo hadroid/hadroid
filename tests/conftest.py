@@ -1,4 +1,3 @@
-import json
 import os
 
 import pytest
@@ -6,11 +5,13 @@ import pytest
 
 @pytest.fixture
 def datadir():
+    """Test data directory."""
     return os.path.join(os.path.dirname(__file__), 'data')
 
 
 @pytest.yield_fixture
 def env_testconfig(datadir):
+    """Test custom configuration of Hadroid."""
     orig = os.environ.get('HADROID_CONFIG')
     os.environ['HADROID_CONFIG'] = os.path.join(datadir, 'testconfig.py')
     yield
@@ -20,13 +21,15 @@ def env_testconfig(datadir):
 
 @pytest.fixture
 def default_client_args():
+    """Default arguments passed to the hadroid."""
     d = {
-        'run': False,
-        'shutdown': False,
         'start': False,
+        'status': False,
         'stop': False,
+        'spawn': False,
+        'kill': False,
         'list': False,
-        '<client-name>': None,
+        '<client-type>': None,
         '<room>': None,
         '<client-id>': None,
     }
@@ -35,14 +38,7 @@ def default_client_args():
 
 @pytest.fixture
 def menus(datadir):
+    """Menu mock."""
     with open(os.path.join(datadir, 'menus.json'), 'r') as fp:
         menus_data = json.load(fp)
     return menus_data
-
-
-@pytest.fixture
-def uservoice_tickets(datadir):
-    """Uservoice tickets response mock."""
-    with open(os.path.join(datadir, 'uservoice_tickets.json'), 'r') as fp:
-        data = json.load(fp)
-    return data

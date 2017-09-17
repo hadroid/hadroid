@@ -23,6 +23,8 @@ MODULES = (
     Module(('selfdestruct', ), selfdestruct, None),
 )
 
+LOGFILE = 'hadroid.log'
+
 CLIENTS = {
     'stream': StreamClient,
     'cron': CronClient,
