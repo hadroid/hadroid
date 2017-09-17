@@ -2,8 +2,9 @@
 
 from datetime import datetime
 
-from hadroid.modules.uservoice import Ticket, TicketList, \
-    aggregate_assignments_by_user, generate_summary, summary_to_markdown
+from hadroid.modules.uservoice import (Ticket, TicketList,
+                                       aggregate_assignments_by_user,
+                                       generate_summary, summary_to_markdown)
 
 
 def test_ticket_note_match_assignment():

@@ -1,19 +1,19 @@
 """Base Client classes."""
 
-from hadroid.modules.cron import CronBook
-import pytz
-import requests
 import json
 import logging
-from time import sleep
-
 import shlex
 from collections import namedtuple
 from datetime import datetime
+from time import sleep
 
 import docopt
+import pytz
+import requests
+
 from hadroid import C, __version__
 from hadroid.docopt2 import docopt_parse
+from hadroid.modules.cron import CronBook
 
 CronEvent = namedtuple('CronEvent', ['dt', 'idx', 'time', 'cmd'])
 

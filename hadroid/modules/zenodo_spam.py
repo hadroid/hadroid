@@ -1,12 +1,13 @@
 """CERN Restaurants menu fetching module."""
 
-import requests
-
+from collections import defaultdict
 from datetime import datetime, timedelta
+
+import requests
 from dateutil import parser
 from dateutil.tz import tzutc
-from collections import defaultdict
 from sklearn.externals import joblib
+
 from hadroid import C
 
 SPAM_USAGE = ('(spam | s) (records|communities) [--from=<from-date>] '

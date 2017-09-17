@@ -1,12 +1,11 @@
 """Example Hadroid configuration."""
 
+from hadroid import Module, build_usage_str
+from hadroid.client import CronClient, StreamClient
 from hadroid.modules.base import echo, ping, selfdestruct
 from hadroid.modules.coffee import COFFEE_USAGE, coffee
 from hadroid.modules.cron import CRON_USAGE, cron
 from hadroid.modules.menu import MENU_USAGE, menu
-from hadroid.client import StreamClient, CronClient
-from hadroid import Module
-from hadroid import build_usage_str
 
 GITTER_PERSONAL_ACCESS_TOKEN = 'YOUR_GITTER_PERSONAL_ACCESS_TOKEN'
 

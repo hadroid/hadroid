@@ -11,14 +11,14 @@ Config:
         (('krzysztof', 'kn'), 'Krzysztof'),
     ]
 """
-import requests
 from collections import Counter
-from cached_property import cached_property
-from dateutil.parser import parse
 from datetime import datetime
 from operator import itemgetter
 from urllib.parse import urlencode
 
+import requests
+from cached_property import cached_property
+from dateutil.parser import parse
 from uservoice import Client
 
 from hadroid import C

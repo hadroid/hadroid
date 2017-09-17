@@ -44,15 +44,16 @@ Options:
 """
 
 
-import os
-import socket
-import pickle
 import json
-import sys
 import logging
+import os
+import pickle
+import socket
+import sys
+from multiprocessing import Process
+
 from docopt import docopt
 
-from multiprocessing import Process
 from hadroid import C, __version__
 
 logging.basicConfig(

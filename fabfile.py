@@ -12,7 +12,6 @@ from fabric.api import cd, env, local, settings, shell_env, sudo
 from fabric.contrib.project import rsync_project
 from fabtools import python, require, supervisor
 
-
 #
 # Utilities
 #
