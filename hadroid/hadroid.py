@@ -134,7 +134,7 @@ def manage_clients(clients, args):
         return client_id
     elif args['list']:
         logging.info("Listing clients.")
-        return list_clients
+        return list_clients(clients)
 
 
 def run_server():
