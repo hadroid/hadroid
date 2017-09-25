@@ -35,7 +35,7 @@ def parse_date(datestring):
 def harvest_zenodo_records(from_date, until_date):
     headers = {"Content-Type": "application/json"}
     uids = C.ZENODO_RECORDS_SPAM_USER_WHITELIST
-    whitelist = [" AND (NOT (owners:{0}))".format(uid) for uid in uids]
+    whitelist = "".join([" AND (NOT (owners:{0}))".format(uid) for uid in uids])
     params = {
         'size': 500,
         'page': 1,
