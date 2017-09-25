@@ -34,11 +34,14 @@ def parse_date(datestring):
 
 def harvest_zenodo_records(from_date, until_date):
     headers = {"Content-Type": "application/json"}
+    uids = C.ZENODO_RECORDS_SPAM_USER_WHITELIST
+    whitelist = [" AND (NOT (owners:{0}))".format(uid) for uid in uids]
     params = {
         'size': 500,
         'page': 1,
-        'q': 'created:[{from_date} TO {until_date}]'.format(
-            from_date=as_date(from_date), until_date=as_date(until_date))
+        'q': 'created:[{from_date} TO {until_date}]{whitelist}'.format(
+            from_date=as_date(from_date), until_date=as_date(until_date),
+            whitelist=whitelist)
     }
     url = 'https://zenodo.org/api/records'
     records = []
