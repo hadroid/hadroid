@@ -1,8 +1,14 @@
-"""CERN Restaurants menu fetching module."""
+"""CERN Restaurants menu fetching module.
+
+Required configuration:
+MENU_HOST = 'https://r1d2.herokuapp.com'
+"""
 
 import re
 
 import requests
+
+from hadroid import C
 
 MENU_USAGE = '(menu | m) [<day>] [--yall]'
 
@@ -20,7 +26,7 @@ def wash_item(item):
 
 def fetch_menu(day='today'):
     """Fetch the menu."""
-    r = requests.get('https://r1d2.herokuapp.com/{day}/r2'.format(day=day))
+    r = requests.get('{host}/{day}/r2'.format(day=day, host=C.MENU_HOST))
     return [wash_item(i) for i in r.json()['menu']]
 
 
