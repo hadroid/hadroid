@@ -52,6 +52,7 @@ setup(
         'scipy==0.19.0',
         'uservoice==0.0.23',
         'python-dateutil==2.6.0',
+        'beautifulsoup4==4.6.0'
     ],
     extras_require={
         'dev': [
