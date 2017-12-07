@@ -42,8 +42,8 @@ def get_reason():
 def get_eos_status(verbose=False, ignore_seen=False):
     res = requests.get(C.EOS_SERVICE_BOARD_URL)
     is_down = 'EOSPUBLIC&lt;/font&gt;\t Availability: 0' in res.text
+    global IS_DOWN
     msg = None
-    logging.info(is_down)
     if is_down and (not IS_DOWN or ignore_seen) :
         reason = get_reason()
         msg = ":warning:EOS Down. **Possible reason: {reason}**".format(
