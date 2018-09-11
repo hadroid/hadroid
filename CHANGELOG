@@ -1,3 +1,5 @@
+v0.1.19
+ - Fix 'menu' command to use new Novae API.
 v0.1.6
  - Addition of Uservoice module.
  - Addition of Zenodo SPAM module.
