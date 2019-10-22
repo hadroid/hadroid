@@ -46,7 +46,7 @@ setup(
         'cached-property==1.3.0',
         'docopt==0.6.2',
         'pytz==2016.10',
-        'requests==2.11.1',
+        'requests==2.20.0',
         'scikit-learn==0.18.1',
         'numpy==1.13.0',
         'scipy==0.19.0',
