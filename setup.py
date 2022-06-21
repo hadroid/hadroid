@@ -48,7 +48,7 @@ setup(
         'pytz==2016.10',
         'requests==2.11.1',
         'scikit-learn==0.18.1',
-        'numpy==1.13.0',
+        'numpy==1.22.0',
         'scipy==0.19.0',
         'uservoice==0.0.23',
         'python-dateutil==2.6.0',
